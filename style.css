@@ -27,6 +27,8 @@ body {
   max-width: 428px;
   margin: 0 auto;
   transition: opacity 0.3s;
+ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+
 }
 
 .top-bar.hidden {
@@ -289,6 +291,8 @@ body {
   max-width: 428px;
   margin: 0 auto;
   z-index: 50;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+
 }
 
 .trip-header-top {
@@ -498,10 +502,10 @@ h3.section-title {
 .stop-row::before {
   content: '';
   position: absolute;
-  left: 20.5px; /* Tačno na sredinu ikone */
+  left: 19.2px; /* Tačno na sredinu ikone */
   top: 0;
   bottom: 0;
-  width: 4px; /* Malo deblja za bolju vidljivost */
+  width: 3px; /* Malo deblja za bolju vidljivost */
   background: rgba(150, 150, 150, 0.3);
   z-index: 0;
 }
@@ -676,3 +680,35 @@ h3.section-title {
 h3.section-title {
   margin-bottom: 9px; /* Više prostora ispod "Gradske linije" */
 }
+
+/* Fade animacija za departure kartice */
+.departure-card {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth fade za calendar day promjenu */
+.calendar-day {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calendar-day:active {
+  transform: scale(0.95);
+  opacity: 0.7;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
