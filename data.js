@@ -14,8 +14,8 @@ function sameForAllDays(departures) {
 
 const LINES = [
   {
-    id: 1,
-    number: "1",
+    id: 4,
+    number: "4",
     name: "Bolnica - Donja Gračanica",
     schedule: {
       workdays: true,
