@@ -6,34 +6,6 @@ let currentDirection = null;
 let selectedDate = new Date();
 
 // =======================
-// SWIPE TO BACK (iOS Style)
-// =======================
-let touchStartX = 0;
-let touchStartY = 0;
-
-document.addEventListener('touchstart', e => { 
-  touchStartX = e.touches[0].clientX; 
-  touchStartY = e.touches[0].clientY;
-});
-
-document.addEventListener('touchend', e => {
-  const touchEndX = e.changedTouches[0].clientX;
-  const touchEndY = e.changedTouches[0].clientY;
-  const deltaX = touchEndX - touchStartX;
-  const deltaY = Math.abs(touchEndY - touchStartY);
-  
-  // Swipe s lijeve ivice udesno (minimum 100px), ali samo ako nije vertikalni scroll
-  if (touchStartX < 60 && deltaX > 100 && deltaY < 50) {
-    const activeScreen = localStorage.getItem('currentScreen');
-    if (activeScreen === 'screen-trip') {
-      document.getElementById('back-to-line-detail').click();
-    } else if (activeScreen === 'screen-line-detail') {
-      document.getElementById('back-to-lines').click();
-    }
-  }
-});
-
-// =======================
 // GET DAY TYPE
 // =======================
 function getDayType(date) {
@@ -66,10 +38,10 @@ function updateHeader(screen) {
   const searchBar = document.getElementById('search-bar');
   const calendarStrip = document.getElementById('calendar-strip');
   const directionsHeader = document.getElementById('directions-tabs-header');
-  const mainHeader = document.getElementById('main-header');
+  const mainHeader = document.getElementById('main-header'); // DODAJ OVO
   
   if (screen === 'screen-lines') {
-    mainHeader.classList.remove('hidden');
+    mainHeader.classList.remove('hidden'); // Prikaži header
     headerTitle.textContent = 'Timetable';
     headerTitle.classList.remove('hidden');
     headerSubtitle.classList.add('hidden');
@@ -77,7 +49,7 @@ function updateHeader(screen) {
     calendarStrip.classList.add('hidden');
     directionsHeader.classList.add('hidden');
   } else if (screen === 'screen-line-detail') {
-    mainHeader.classList.remove('hidden');
+    mainHeader.classList.remove('hidden'); // Prikaži header
     headerTitle.textContent = 'Route departures';
     headerTitle.classList.remove('hidden');
     
@@ -88,7 +60,7 @@ function updateHeader(screen) {
     calendarStrip.classList.remove('hidden');
     directionsHeader.classList.remove('hidden');
   } else if (screen === 'screen-trip') {
-    mainHeader.classList.add('hidden');
+    mainHeader.classList.add('hidden'); // SAKRIJ CIJELI HEADER
     headerTitle.classList.add('hidden');
     headerSubtitle.classList.add('hidden');
     searchBar.classList.add('hidden');
@@ -103,35 +75,42 @@ function updateHeader(screen) {
   }
 }
 
+
 // =======================
-// SHOW SCREEN
+// SHOW SCREEN - SA KONTROLOM BACK BUTTONA
 // =======================
 function showScreen(id) {
+  // Ukloni active sa svih screenova
   document.querySelectorAll(".screen").forEach(div => {
     div.classList.remove("active");
   });
   
+  // Aktiviraj novi screen
   document.getElementById(id).classList.add("active");
   localStorage.setItem('currentScreen', id);
   
+  // Kontroliraj back buttone
   const backToLines = document.getElementById('back-to-lines');
   const backToDetail = document.getElementById('back-to-line-detail');
-  const tripHeader = document.getElementById('trip-header-container');
   
+  // Sakrij SVE back buttone prvo
   backToLines.classList.add('hidden');
   backToDetail.classList.add('hidden');
   
+  // Onda pokaži onaj koji treba
   if (id === 'screen-line-detail') {
+    // NA ROUTE DEPARTURES - pokaži back to lines
     backToLines.classList.remove('hidden');
   } else if (id === 'screen-trip') {
+    // NA TRIP SCREEN - pokaži back to detail
     backToDetail.classList.remove('hidden');
-    tripHeader.style.display = 'block';
-  } else {
-    tripHeader.style.display = 'none';
   }
+  // Na screen-lines ne pokazuj ništa (ostaju hidden)
   
   updateHeader(id);
 }
+
+
 
 // =======================
 // RENDER LINES
@@ -181,8 +160,6 @@ function renderCalendar() {
       selectedDate = new Date(date);
       renderCalendar();
       renderDepartures();
-      // AUTO SCROLL NA VRH KOD PROMJENE DATUMA
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     
     container.appendChild(dayDiv);
@@ -325,6 +302,7 @@ function renderDepartures() {
 function openTrip(departure) {
   localStorage.setItem('currentDepartureTime', departure.time);
 
+  // Prikaži BROJ linije umjesto indeksa
   document.getElementById('trip-header-line').textContent = `${currentLine.number} - ${currentLine.name}`;
   
   const today = new Date();
@@ -356,23 +334,6 @@ function openTrip(departure) {
     const now = new Date();
     const diffMinutes = (now - departureDate) / (1000 * 60);
 
-    // Pronađi TRENUTNU stanicu gdje je bus
-    let currentStopIndex = -1;
-    for (let i = 0; i < departure.stops.length; i++) {
-      if (diffMinutes < departure.stops[i].offset) {
-        currentStopIndex = i - 1;
-        break;
-      }
-    }
-    
-    if (currentStopIndex === -1) {
-      currentStopIndex = departure.stops.length - 1;
-    }
-    
-    if (diffMinutes < 0) {
-      currentStopIndex = 0;
-    }
-
     departure.stops.forEach((stop, index) => {
       const arrivalMinutes = stop.offset;
       const timeLeft = arrivalMinutes - diffMinutes;
@@ -383,11 +344,11 @@ function openTrip(departure) {
       let statusClass = '';
       let rowClass = 'stop-row';
       
-      if (index < currentStopIndex) {
+      if (timeLeft < 0) {
         iconClass = 'passed';
         statusClass = 'gray';
         rowClass += ' passed';
-      } else if (index === currentStopIndex) {
+      } else if (timeLeft <= 5) {
         iconClass = 'active';
         statusClass = 'green';
         rowClass += ' active';
@@ -401,18 +362,14 @@ function openTrip(departure) {
       const arrivalDate = new Date(departureDate.getTime() + arrivalMinutes * 60000);
       const arrivalTime = `${String(arrivalDate.getHours()).padStart(2, '0')}:${String(arrivalDate.getMinutes()).padStart(2, '0')}`;
 
-      // Bus ikona SAMO na trenutnoj stanici
-      const busIcon = (index === currentStopIndex) 
+      const busIcon = (index === 0 && timeLeft >= 0) || (timeLeft <= 5 && timeLeft >= 0) 
         ? '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>'
         : '';
 
       let timeDisplay = arrivalTime;
-      const isToday = selectedDate.toDateString() === new Date().toDateString();
-      
-      // BOLD MINUTES - samo za buduce stanice danas
-      if (isToday && timeLeft > 0 && timeLeft <= 10 && index >= currentStopIndex) {
+      if (timeLeft > 0 && timeLeft <= 10) {
         const mins = Math.round(timeLeft);
-        timeDisplay = `<span class="time-number" style="font-weight: 800;">${mins}</span> <span class="time-unit">min</span>`;
+        timeDisplay = `<span class="time-number">${mins}</span> <span class="time-unit">min</span>`;
       }
 
       row.innerHTML = `
@@ -511,3 +468,4 @@ function restoreState() {
 // =======================
 renderLines();
 restoreState();
+
