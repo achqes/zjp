@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zenica Bus Timetable</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Zenica Bus</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -13,7 +13,7 @@
   <button id="back-to-lines" class="back-btn hidden">←</button>
   <button id="back-to-line-detail" class="back-btn hidden">←</button>
 
-  <!-- MAIN HEADER -->
+  <!-- DYNAMIC HEADER -->
   <div class="top-bar" id="main-header">
     <div class="top-nav">
       <span id="header-title">Timetable</span>
@@ -26,7 +26,7 @@
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.35-4.35"></path>
       </svg>
-      <input type="text" id="search-input" placeholder="Find your route!">
+      <input type="text" id="search-input" placeholder="Find your route">
     </div>
 
     <!-- CALENDAR STRIP -->
@@ -36,47 +36,29 @@
     <div id="directions-tabs-header" class="hidden"></div>
   </div>
 
-  <!-- TRIP HEADER (visible only on trip screen) -->
-  <div class="trip-header" style="display: none;" id="trip-header-container">
+  <!-- TRIP HEADER -->
+  <div class="trip-header" id="trip-header-container" style="display: none;">
     <div class="trip-header-top">Trip details</div>
     <div class="trip-header-line" id="trip-header-line"></div>
     <div class="trip-header-date" id="trip-date"></div>
   </div>
 
-  <!-- SCREEN 1: LINES LIST -->
+  <!-- SCREENS -->
   <div id="screen-lines" class="screen active">
     <div class="content" id="lines-list"></div>
   </div>
 
-  <!-- SCREEN 2: LINE DETAIL (DEPARTURES) -->
   <div id="screen-line-detail" class="screen">
     <div class="content with-expanded-header" id="departures-list"></div>
   </div>
 
-  <!-- SCREEN 3: TRIP DETAILS -->
   <div id="screen-trip" class="screen">
     <div class="content trip-content" id="stops-list"></div>
   </div>
 
-  <!-- SCRIPTS - REDOSLED JE KRITIČAN! -->
+  <!-- SCRIPTS -->
   <script src="data.js"></script>
   <script src="app.js"></script>
-
-  <script>
-    // Prikaži/sakrij trip header automatski
-    const tripScreen = document.getElementById('screen-trip');
-    const tripHeaderContainer = document.getElementById('trip-header-container');
-    
-    const observer = new MutationObserver(() => {
-      if (tripScreen.classList.contains('active')) {
-        tripHeaderContainer.style.display = 'block';
-      } else {
-        tripHeaderContainer.style.display = 'none';
-      }
-    });
-    
-    observer.observe(tripScreen, { attributes: true, attributeFilter: ['class'] });
-  </script>
 
 </body>
 </html>
