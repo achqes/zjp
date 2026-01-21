@@ -6,6 +6,34 @@ let currentDirection = null;
 let selectedDate = new Date();
 
 // =======================
+// SWIPE TO BACK (iOS Style)
+// =======================
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener('touchstart', e => { 
+  touchStartX = e.touches[0].clientX; 
+  touchStartY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchend', e => {
+  const touchEndX = e.changedTouches[0].clientX;
+  const touchEndY = e.changedTouches[0].clientY;
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = Math.abs(touchEndY - touchStartY);
+  
+  // Swipe s lijeve ivice udesno (minimum 100px), ali samo ako nije vertikalni scroll
+  if (touchStartX < 60 && deltaX > 100 && deltaY < 50) {
+    const activeScreen = localStorage.getItem('currentScreen');
+    if (activeScreen === 'screen-trip') {
+      document.getElementById('back-to-line-detail').click();
+    } else if (activeScreen === 'screen-line-detail') {
+      document.getElementById('back-to-lines').click();
+    }
+  }
+});
+
+// =======================
 // GET DAY TYPE
 // =======================
 function getDayType(date) {
@@ -88,6 +116,7 @@ function showScreen(id) {
   
   const backToLines = document.getElementById('back-to-lines');
   const backToDetail = document.getElementById('back-to-line-detail');
+  const tripHeader = document.getElementById('trip-header-container');
   
   backToLines.classList.add('hidden');
   backToDetail.classList.add('hidden');
@@ -96,6 +125,9 @@ function showScreen(id) {
     backToLines.classList.remove('hidden');
   } else if (id === 'screen-trip') {
     backToDetail.classList.remove('hidden');
+    tripHeader.style.display = 'block';
+  } else {
+    tripHeader.style.display = 'none';
   }
   
   updateHeader(id);
@@ -149,6 +181,8 @@ function renderCalendar() {
       selectedDate = new Date(date);
       renderCalendar();
       renderDepartures();
+      // AUTO SCROLL NA VRH KOD PROMJENE DATUMA
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     
     container.appendChild(dayDiv);
@@ -373,9 +407,12 @@ function openTrip(departure) {
         : '';
 
       let timeDisplay = arrivalTime;
-      if (timeLeft > 0 && timeLeft <= 10 && index >= currentStopIndex) {
+      const isToday = selectedDate.toDateString() === new Date().toDateString();
+      
+      // BOLD MINUTES - samo za buduce stanice danas
+      if (isToday && timeLeft > 0 && timeLeft <= 10 && index >= currentStopIndex) {
         const mins = Math.round(timeLeft);
-        timeDisplay = `<span class="time-number">${mins}</span> <span class="time-unit">min</span>`;
+        timeDisplay = `<span class="time-number" style="font-weight: 800;">${mins}</span> <span class="time-unit">min</span>`;
       }
 
       row.innerHTML = `
