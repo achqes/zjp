@@ -6,7 +6,56 @@ let currentDirection = null;
 let selectedDate = new Date();
 
 // =======================
-// GET DAY TYPE
+// SCHOOL DAY DETECTION
+// =======================
+function isSchoolDay(date) {
+  const day = date.getDay();
+  if (day === 0 || day === 6) return false;
+  
+  const month = date.getMonth();
+  const d = date.getDate();
+  
+  // Zimski raspust do 28. januara 2026.
+  if (month === 0 && d <= 28) return false;
+  
+  // Ljetni raspust (od 1. juna do 31. avgusta)
+  if (month >= 5 && month <= 7) return false;
+  
+  // Božićni raspust (20-31. decembar)
+  if (month === 11 && d >= 20) return false;
+  
+  return true;
+}
+
+// =======================
+// SWIPE TO BACK
+// =======================
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener('touchstart', e => { 
+  touchStartX = e.touches[0].clientX; 
+  touchStartY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchend', e => {
+  const touchEndX = e.changedTouches[0].clientX;
+  const touchEndY = e.changedTouches[0].clientY;
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = Math.abs(touchEndY - touchStartY);
+  
+  if (touchStartX < 60 && deltaX > 100 && deltaY < 50) {
+    const screen = localStorage.getItem('currentScreen');
+    if (screen === 'screen-trip') {
+      document.getElementById('back-to-line-detail').click();
+    } else if (screen === 'screen-line-detail') {
+      document.getElementById('back-to-lines').click();
+    }
+  }
+});
+
+// =======================
+// DAY TYPE
 // =======================
 function getDayType(date) {
   const day = date.getDay();
@@ -16,17 +65,33 @@ function getDayType(date) {
 }
 
 // =======================
-// GET DEPARTURES FOR DATE
+// SHOW SCREEN
 // =======================
-function getDeparturesForDate(direction, date) {
-  const dayType = getDayType(date);
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  localStorage.setItem('currentScreen', id);
+
+  const bLines = document.getElementById('back-to-lines');
+  const bTrip = document.getElementById('back-to-line-detail');
+  const tripHeader = document.getElementById('trip-header-container');
+  const mainHeader = document.getElementById('main-header');
+
+  bLines.classList.add('hidden');
+  bTrip.classList.add('hidden');
   
-  const schedule = currentLine.schedule;
-  if (dayType === 'sunday' && !schedule.sunday) return [];
-  if (dayType === 'saturday' && !schedule.saturday) return [];
-  if (dayType === 'workdays' && !schedule.workdays) return [];
-  
-  return direction.departures[dayType] || [];
+  if (tripHeader) tripHeader.style.display = 'none';
+  mainHeader.classList.remove('hidden');
+
+  if (id === 'screen-line-detail') {
+    bLines.classList.remove('hidden');
+  } else if (id === 'screen-trip') {
+    bTrip.classList.remove('hidden');
+    if (tripHeader) tripHeader.style.display = 'block';
+    mainHeader.classList.add('hidden');
+  }
+
+  updateHeader(id);
 }
 
 // =======================
@@ -38,10 +103,8 @@ function updateHeader(screen) {
   const searchBar = document.getElementById('search-bar');
   const calendarStrip = document.getElementById('calendar-strip');
   const directionsHeader = document.getElementById('directions-tabs-header');
-  const mainHeader = document.getElementById('main-header'); // DODAJ OVO
-  
+
   if (screen === 'screen-lines') {
-    mainHeader.classList.remove('hidden'); // Prikaži header
     headerTitle.textContent = 'Timetable';
     headerTitle.classList.remove('hidden');
     headerSubtitle.classList.add('hidden');
@@ -49,67 +112,51 @@ function updateHeader(screen) {
     calendarStrip.classList.add('hidden');
     directionsHeader.classList.add('hidden');
   } else if (screen === 'screen-line-detail') {
-    mainHeader.classList.remove('hidden'); // Prikaži header
     headerTitle.textContent = 'Route departures';
     headerTitle.classList.remove('hidden');
-    
     headerSubtitle.textContent = currentLine.number;
     headerSubtitle.classList.remove('hidden');
-    
     searchBar.classList.add('hidden');
     calendarStrip.classList.remove('hidden');
     directionsHeader.classList.remove('hidden');
   } else if (screen === 'screen-trip') {
-    mainHeader.classList.add('hidden'); // SAKRIJ CIJELI HEADER
     headerTitle.classList.add('hidden');
     headerSubtitle.classList.add('hidden');
     searchBar.classList.add('hidden');
     calendarStrip.classList.add('hidden');
     directionsHeader.classList.add('hidden');
-  } else {
-    mainHeader.classList.remove('hidden');
-    searchBar.classList.add('hidden');
-    calendarStrip.classList.add('hidden');
-    directionsHeader.classList.add('hidden');
-    headerSubtitle.classList.add('hidden');
   }
 }
 
-
 // =======================
-// SHOW SCREEN - SA KONTROLOM BACK BUTTONA
+// RENDER CALENDAR
 // =======================
-function showScreen(id) {
-  // Ukloni active sa svih screenova
-  document.querySelectorAll(".screen").forEach(div => {
-    div.classList.remove("active");
-  });
+function renderCalendar() {
+  const container = document.getElementById("calendar-strip");
+  container.innerHTML = '';
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
-  // Aktiviraj novi screen
-  document.getElementById(id).classList.add("active");
-  localStorage.setItem('currentScreen', id);
-  
-  // Kontroliraj back buttone
-  const backToLines = document.getElementById('back-to-lines');
-  const backToDetail = document.getElementById('back-to-line-detail');
-  
-  // Sakrij SVE back buttone prvo
-  backToLines.classList.add('hidden');
-  backToDetail.classList.add('hidden');
-  
-  // Onda pokaži onaj koji treba
-  if (id === 'screen-line-detail') {
-    // NA ROUTE DEPARTURES - pokaži back to lines
-    backToLines.classList.remove('hidden');
-  } else if (id === 'screen-trip') {
-    // NA TRIP SCREEN - pokaži back to detail
-    backToDetail.classList.remove('hidden');
+  for (let i = 0; i < 7; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() + i);
+    
+    const div = document.createElement("div");
+    div.className = `calendar-day ${date.toDateString() === selectedDate.toDateString() ? 'active' : ''}`;
+    div.innerHTML = `
+      <span class="calendar-day-number">${date.getDate()}</span>
+      <span class="calendar-day-name">${days[date.getDay()]}</span>
+    `;
+    
+    div.onclick = () => {
+      selectedDate = new Date(date);
+      renderCalendar();
+      renderDepartures();
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // ← OVO SCROLLUJE NA VRH
+    };
+    
+    container.appendChild(div);
   }
-  // Na screen-lines ne pokazuj ništa (ostaju hidden)
-  
-  updateHeader(id);
 }
-
 
 
 // =======================
@@ -119,7 +166,10 @@ function renderLines() {
   const container = document.getElementById("lines-list");
   container.innerHTML = '<h3 class="section-title">Gradske linije</h3>';
 
-  LINES.forEach((line) => {
+  // Sortiraj linije po ID-u (kao što su poredane u data.js)
+  const sortedLines = [...LINES].sort((a, b) => a.id - b.id);
+
+  sortedLines.forEach((line) => {
     const item = document.createElement("div");
     item.className = "line-item";
     item.onclick = () => openLineDetail(line.id);
@@ -131,40 +181,6 @@ function renderLines() {
   });
 }
 
-// =======================
-// RENDER CALENDAR
-// =======================
-function renderCalendar() {
-  const container = document.getElementById("calendar-strip");
-  container.innerHTML = '';
-  
-  const today = new Date();
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    
-    const dayDiv = document.createElement("div");
-    dayDiv.className = "calendar-day";
-    if (date.toDateString() === selectedDate.toDateString()) {
-      dayDiv.classList.add('active');
-    }
-    
-    dayDiv.innerHTML = `
-      <div class="calendar-day-number">${date.getDate()}</div>
-      <div class="calendar-day-name">${days[date.getDay()]}</div>
-    `;
-    
-    dayDiv.onclick = () => {
-      selectedDate = new Date(date);
-      renderCalendar();
-      renderDepartures();
-    };
-    
-    container.appendChild(dayDiv);
-  }
-}
 
 // =======================
 // OPEN LINE DETAIL
@@ -178,30 +194,23 @@ function openLineDetail(lineId) {
   }
   
   currentDirection = currentLine.directions[0];
-
   localStorage.setItem('currentLineId', lineId);
   localStorage.setItem('currentDirectionId', currentDirection.id);
 
   renderCalendar();
   renderDirectionTabsHeader();
   renderDepartures();
-
   showScreen("screen-line-detail");
 }
 
 // =======================
-// RENDER DIRECTION TABS HEADER
+// RENDER DIRECTION TABS
 // =======================
 function renderDirectionTabsHeader() {
   const tabs = document.getElementById("directions-tabs-header");
-  
-  if (!tabs) {
-    console.error('directions-tabs-header element not found');
-    return;
-  }
+  if (!tabs) return;
   
   tabs.innerHTML = "";
-
   const dir = currentDirection;
   
   const tab = document.createElement("div");
@@ -222,7 +231,6 @@ function renderDirectionTabsHeader() {
     currentDirection = currentLine.directions[nextIndex];
     
     localStorage.setItem('currentDirectionId', currentDirection.id);
-    
     renderDirectionTabsHeader();
     renderDepartures();
   };
@@ -264,11 +272,106 @@ function getDepartureStatus(startTime, endTime) {
 function renderDepartures() {
   const list = document.getElementById("departures-list");
   list.innerHTML = "";
+  
+  const dayType = getDayType(selectedDate);
+  const isSchool = isSchoolDay(selectedDate);
+  
+  // Provjera da li linija saobraća na ovaj dan
+  if (dayType === 'sunday' && currentLine.schedule.sunday === false) {
+    list.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
+        <div style="position: relative;">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.15;">
+            <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" fill="currentColor"/>
+          </svg>
+          <div style="position: absolute; top: -25px; right: -30px; font-size: 50px; opacity: 0.2;">
+            <div style="animation: zzz 2s ease-in-out infinite;">z</div>
+          </div>
+          <div style="position: absolute; top: -45px; right: -15px; font-size: 35px; opacity: 0.15;">
+            <div style="animation: zzz 2s ease-in-out infinite 0.3s;">z</div>
+          </div>
+          <div style="position: absolute; top: -60px; right: 0; font-size: 25px; opacity: 0.1;">
+            <div style="animation: zzz 2s ease-in-out infinite 0.6s;">z</div>
+          </div>
+        </div>
+        <div>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
+          <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
+        </div>
+      </div>
+      <style>
+        @keyframes zzz {
+          0%, 100% { transform: translateY(0px); opacity: 0.2; }
+          50% { transform: translateY(-10px); opacity: 0.05; }
+        }
+      </style>
+    `;
+    return;
+  }
+  
+  if (dayType === 'saturday' && currentLine.schedule.saturday === false) {
+    list.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
+        <div style="position: relative;">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.15;">
+            <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" fill="currentColor"/>
+          </svg>
+          <div style="position: absolute; top: -25px; right: -30px; font-size: 50px; opacity: 0.2;">
+            <div style="animation: zzz 2s ease-in-out infinite;">z</div>
+          </div>
+          <div style="position: absolute; top: -45px; right: -15px; font-size: 35px; opacity: 0.15;">
+            <div style="animation: zzz 2s ease-in-out infinite 0.3s;">z</div>
+          </div>
+          <div style="position: absolute; top: -60px; right: 0; font-size: 25px; opacity: 0.1;">
+            <div style="animation: zzz 2s ease-in-out infinite 0.6s;">z</div>
+          </div>
+        </div>
+        <div>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
+          <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
+        </div>
+      </div>
+      <style>
+        @keyframes zzz {
+          0%, 100% { transform: translateY(0px); opacity: 0.2; }
+          50% { transform: translateY(-10px); opacity: 0.05; }
+        }
+      </style>
+    `;
+    return;
+  }
 
-  const departures = getDeparturesForDate(currentDirection, selectedDate);
+  const departures = currentDirection.departures[dayType] || [];
   
   if (departures.length === 0) {
-    list.innerHTML = '<p style="text-align:center; padding:40px; color:#8E8E93;">Nema polazaka ovog dana</p>';
+    list.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
+        <div style="position: relative;">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.15;">
+            <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" fill="currentColor"/>
+          </svg>
+          <div style="position: absolute; top: -25px; right: -30px; font-size: 50px; opacity: 0.2;">
+            <div style="animation: zzz 2s ease-in-out infinite;">z</div>
+          </div>
+          <div style="position: absolute; top: -45px; right: -15px; font-size: 35px; opacity: 0.15;">
+            <div style="animation: zzz 2s ease-in-out infinite 0.3s;">z</div>
+          </div>
+          <div style="position: absolute; top: -60px; right: 0; font-size: 25px; opacity: 0.1;">
+            <div style="animation: zzz 2s ease-in-out infinite 0.6s;">z</div>
+          </div>
+        </div>
+        <div>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
+          <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
+        </div>
+      </div>
+      <style>
+        @keyframes zzz {
+          0%, 100% { transform: translateY(0px); opacity: 0.2; }
+          50% { transform: translateY(-10px); opacity: 0.05; }
+        }
+      </style>
+    `;
     return;
   }
 
@@ -276,6 +379,8 @@ function renderDepartures() {
   const totalDuration = firstDeparture.stops[firstDeparture.stops.length - 1].offset;
 
   departures.forEach(departure => {
+    if (departure.schoolOnly && !isSchool) return;
+    
     const startTime = departure.time;
     const endTime = calculateArrivalTime(startTime, totalDuration);
     
@@ -302,7 +407,6 @@ function renderDepartures() {
 function openTrip(departure) {
   localStorage.setItem('currentDepartureTime', departure.time);
 
-  // Prikaži BROJ linije umjesto indeksa
   document.getElementById('trip-header-line').textContent = `${currentLine.number} - ${currentLine.name}`;
   
   const today = new Date();
@@ -334,6 +438,18 @@ function openTrip(departure) {
     const now = new Date();
     const diffMinutes = (now - departureDate) / (1000 * 60);
 
+    let currentStopIndex = -1;
+    for (let i = 0; i < departure.stops.length; i++) {
+      if (diffMinutes < departure.stops[i].offset) {
+        currentStopIndex = i - 1;
+        break;
+      }
+    }
+    
+    if (currentStopIndex === -1) {
+      currentStopIndex = diffMinutes < 0 ? 0 : departure.stops.length - 1;
+    }
+
     departure.stops.forEach((stop, index) => {
       const arrivalMinutes = stop.offset;
       const timeLeft = arrivalMinutes - diffMinutes;
@@ -344,11 +460,11 @@ function openTrip(departure) {
       let statusClass = '';
       let rowClass = 'stop-row';
       
-      if (timeLeft < 0) {
+      if (index < currentStopIndex) {
         iconClass = 'passed';
         statusClass = 'gray';
         rowClass += ' passed';
-      } else if (timeLeft <= 5) {
+      } else if (index === currentStopIndex) {
         iconClass = 'active';
         statusClass = 'green';
         rowClass += ' active';
@@ -362,14 +478,16 @@ function openTrip(departure) {
       const arrivalDate = new Date(departureDate.getTime() + arrivalMinutes * 60000);
       const arrivalTime = `${String(arrivalDate.getHours()).padStart(2, '0')}:${String(arrivalDate.getMinutes()).padStart(2, '0')}`;
 
-      const busIcon = (index === 0 && timeLeft >= 0) || (timeLeft <= 5 && timeLeft >= 0) 
+      const busIcon = (index === currentStopIndex) 
         ? '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>'
         : '';
 
       let timeDisplay = arrivalTime;
-      if (timeLeft > 0 && timeLeft <= 10) {
+      const isToday = selectedDate.toDateString() === new Date().toDateString();
+      
+      if (isToday && timeLeft > 0 && timeLeft <= 10 && index >= currentStopIndex) {
         const mins = Math.round(timeLeft);
-        timeDisplay = `<span class="time-number">${mins}</span> <span class="time-unit">min</span>`;
+        timeDisplay = `<span class="time-number" style="font-weight: 800; font-size: 32px;">${mins}</span> <span class="time-unit">min</span>`;
       }
 
       row.innerHTML = `
