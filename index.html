@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timetable</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <!-- FIXED HEADER -->
+  <div class="top-bar" id="main-header">
+    <div class="top-nav">
+      <span id="header-title">Timetable</span>
+      <span id="header-subtitle" class="hidden"></span>
+    </div>
+    
+    <div class="search-container" id="search-bar">
+      <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="7" fill="none" stroke="rgb(150,150,150)" stroke-width="2"/>
+        <line x1="16" y1="16" x2="21" y2="21" stroke="rgb(150,150,150)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input type="text" id="search-input" placeholder="Find your route!" />
+    </div>
+    
+    <div class="calendar-strip hidden" id="calendar-strip"></div>
+    <div id="directions-tabs-header" class="hidden"></div>
+  </div>
+
+  <!-- BACK BUTTONS - IZVAN SCREENOVA -->
+  <button class="back-btn hidden" id="back-to-lines">←</button>
+  <button class="back-btn hidden" id="back-to-line-detail">←</button>
+
+  <!-- LINES SCREEN -->
+  <div class="screen active" id="screen-lines">
+    <div class="content with-header">
+      <div id="lines-list"></div>
+    </div>
+  </div>
+
+  <!-- LINE DETAIL SCREEN -->
+  <div class="screen" id="screen-line-detail">
+    <div class="content with-expanded-header">
+      <div id="departures-list"></div>
+    </div>
+  </div>
+
+  <!-- TRIP SCREEN -->
+  <div class="screen" id="screen-trip">
+    <div class="trip-header" id="trip-header">
+      <div class="trip-header-top">Route departures</div>
+      <div class="trip-header-line" id="trip-header-line">1 - Bolnica - Donja Gračanica</div>
+      <div class="trip-header-date" id="trip-date">Today</div>
+    </div>
+    
+    <div class="content trip-content">
+      <div id="stops-list"></div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
