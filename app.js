@@ -4,6 +4,7 @@
 let currentLine = null;
 let currentDirection = null;
 let selectedDate = new Date();
+let favorites = JSON.parse(localStorage.getItem('zenicaBusFavorites') || '[]');
 
 // =======================
 // SCHOOL DAY DETECTION
@@ -11,20 +12,125 @@ let selectedDate = new Date();
 function isSchoolDay(date) {
   const day = date.getDay();
   if (day === 0 || day === 6) return false;
-  
+
   const month = date.getMonth();
   const d = date.getDate();
-  
-  // Zimski raspust do 28. januara 2026.
+
   if (month === 0 && d <= 28) return false;
-  
-  // Ljetni raspust (od 1. juna do 31. avgusta)
   if (month >= 5 && month <= 7) return false;
-  
-  // Božićni raspust (20-31. decembar)
   if (month === 11 && d >= 20) return false;
-  
+
   return true;
+}
+
+// =============================
+// HOME SCREEN FUNKCIONALNOST
+// =============================
+
+function initHomeScreen() {
+  document.querySelectorAll('.home-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetTab = tab.dataset.tab;
+
+      document.querySelectorAll('.home-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.home-tab-content').forEach(c => c.classList.remove('active'));
+
+      tab.classList.add('active');
+      const contentId = targetTab === 'favorites' ? 'home-tab-favorites' : 'home-tab-notifications';
+      document.getElementById(contentId).classList.add('active');
+    });
+  });
+
+  renderHomeScreen();
+}
+
+function renderHomeScreen() {
+  renderFavorites();
+  renderNotifications();
+}
+
+function renderFavorites() {
+  const container = document.getElementById('favorites-list');
+  const favLines = LINES.filter(line => favorites.includes(line.id));
+
+  if (favLines.length === 0) {
+    container.innerHTML = `
+      <div class="empty-favorites">
+        <svg viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="80" fill="rgba(0, 122, 255, 0.1)"/>
+          <path d="M100 60 L120 90 L150 95 L125 118 L132 150 L100 133 L68 150 L75 118 L50 95 L80 90 Z" 
+                fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+        </svg>
+        <h3>Izgleda da još nemaš spremljenu niti jednu omiljenu liniju...</h3>
+        <p style="margin-top: 8px;">Ne gubi vrijeme čekajući bus koji možda neće ni doći.</p>
+        <p style="margin-top: 12px; font-weight: 600;">Spremi svoju omiljenu liniju! 📍📊</p>
+      </div>
+    `;
+  } else {
+    container.innerHTML = favLines.map(line => createLineCard(line)).join('');
+  }
+}
+
+function renderNotifications() {
+  const container = document.getElementById('notifications-list');
+
+  if (typeof OBAVIJESTI === 'undefined' || OBAVIJESTI.length === 0) {
+    container.innerHTML = `
+      <div class="notification-empty">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+        </svg>
+        <h3>Nema novih obavijesti</h3>
+        <p style="margin-top: 8px;">Ovdje ćeš vidjeti sve važne informacije o izmjenama u redu vožnje.</p>
+      </div>
+    `;
+  } else {
+    const sortedNotifications = [...OBAVIJESTI].sort((a, b) => 
+      new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    container.innerHTML = sortedNotifications.map(notif => {
+      const timeDisplay = typeof formatNotificationTime === 'function' 
+        ? formatNotificationTime(notif.timestamp) 
+        : notif.time;
+
+      return `
+        <div class="notification-card">
+          <div class="notification-header">
+            <svg class="notification-icon" viewBox="0 0 24 24">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+            </svg>
+            <span class="notification-badge">${notif.badge}</span>
+            <span class="notification-time">${timeDisplay}</span>
+          </div>
+          <div class="notification-title">${notif.title}</div>
+          <div class="notification-content">${notif.content.replace(/\n/g, '<br>')}</div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function createLineCard(line) {
+  const route = `${line.directions[0].from} → ${line.directions[0].to}`;
+
+  return `
+    <div class="line-item-home" onclick="openLineFromHome(${line.id})">
+      <div class="line-number">${line.number}</div>
+      <div class="line-info">
+        <div class="line-name">${line.name}</div>
+        <div class="line-route">${route}</div>
+      </div>
+    </div>
+  `;
+}
+
+function openLineFromHome(lineId) {
+  const line = LINES.find(l => l.id === lineId);
+  if (!line) return;
+
+  document.getElementById('screen-home').classList.remove('active');
+  openLineDetail(lineId);
 }
 
 // =======================
@@ -43,13 +149,13 @@ document.addEventListener('touchend', e => {
   const touchEndY = e.changedTouches[0].clientY;
   const deltaX = touchEndX - touchStartX;
   const deltaY = Math.abs(touchEndY - touchStartY);
-  
+
   if (touchStartX < 60 && deltaX > 100 && deltaY < 50) {
     const screen = localStorage.getItem('currentScreen');
     if (screen === 'screen-trip') {
       document.getElementById('back-to-line-detail').click();
     } else if (screen === 'screen-line-detail') {
-      document.getElementById('back-to-lines').click();
+      document.getElementById('back-to-home').click();
     }
   }
 });
@@ -72,23 +178,27 @@ function showScreen(id) {
   document.getElementById(id).classList.add("active");
   localStorage.setItem('currentScreen', id);
 
-  const bLines = document.getElementById('back-to-lines');
+  const bHome = document.getElementById('back-to-home');
   const bTrip = document.getElementById('back-to-line-detail');
   const tripHeader = document.getElementById('trip-header-container');
   const mainHeader = document.getElementById('main-header');
+  const bottomNav = document.querySelector('.bottom-nav');
 
-  bLines.classList.add('hidden');
+  bHome.classList.add('hidden');
   bTrip.classList.add('hidden');
-  
+
   if (tripHeader) tripHeader.style.display = 'none';
   mainHeader.classList.remove('hidden');
+  bottomNav.style.display = 'flex';
 
   if (id === 'screen-line-detail') {
-    bLines.classList.remove('hidden');
+    bHome.classList.remove('hidden');
+    bottomNav.style.display = 'none';
   } else if (id === 'screen-trip') {
     bTrip.classList.remove('hidden');
     if (tripHeader) tripHeader.style.display = 'block';
     mainHeader.classList.add('hidden');
+    bottomNav.style.display = 'none';
   }
 
   updateHeader(id);
@@ -103,14 +213,24 @@ function updateHeader(screen) {
   const searchBar = document.getElementById('search-bar');
   const calendarStrip = document.getElementById('calendar-strip');
   const directionsHeader = document.getElementById('directions-tabs-header');
+  const favoriteBtn = document.getElementById('favorite-btn');
 
-  if (screen === 'screen-lines') {
+  if (screen === 'screen-home') {
+    headerTitle.textContent = 'Početna';
+    headerTitle.classList.remove('hidden');
+    headerSubtitle.classList.add('hidden');
+    searchBar.classList.add('hidden');
+    calendarStrip.classList.add('hidden');
+    directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
+  } else if (screen === 'screen-lines') {
     headerTitle.textContent = 'Timetable';
     headerTitle.classList.remove('hidden');
     headerSubtitle.classList.add('hidden');
     searchBar.classList.remove('hidden');
     calendarStrip.classList.add('hidden');
     directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
   } else if (screen === 'screen-line-detail') {
     headerTitle.textContent = 'Route departures';
     headerTitle.classList.remove('hidden');
@@ -119,14 +239,46 @@ function updateHeader(screen) {
     searchBar.classList.add('hidden');
     calendarStrip.classList.remove('hidden');
     directionsHeader.classList.remove('hidden');
+    favoriteBtn.classList.remove('hidden');
+    updateFavoriteButton();
   } else if (screen === 'screen-trip') {
     headerTitle.classList.add('hidden');
     headerSubtitle.classList.add('hidden');
     searchBar.classList.add('hidden');
     calendarStrip.classList.add('hidden');
     directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
   }
 }
+
+// =======================
+// FAVORITE BUTTON
+// =======================
+function updateFavoriteButton() {
+  const btn = document.getElementById('favorite-btn');
+  if (!btn || !currentLine) return;
+
+  const isFav = favorites.includes(currentLine.id);
+  btn.textContent = isFav ? '⭐' : '☆';
+  btn.className = isFav ? 'favorite-btn active' : 'favorite-btn';
+}
+
+function toggleLineFavorite() {
+  if (!currentLine) return;
+
+  if (favorites.includes(currentLine.id)) {
+    favorites = favorites.filter(id => id !== currentLine.id);
+  } else {
+    favorites.push(currentLine.id);
+  }
+
+  localStorage.setItem('zenicaBusFavorites', JSON.stringify(favorites));
+  updateFavoriteButton();
+  renderHomeScreen();
+}
+
+// Napravi globalnu funkciju dostupnu za onclick
+window.toggleLineFavorite = toggleLineFavorite;
 
 // =======================
 // RENDER CALENDAR
@@ -135,29 +287,28 @@ function renderCalendar() {
   const container = document.getElementById("calendar-strip");
   container.innerHTML = '';
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  
+
   for (let i = 0; i < 7; i++) {
     const date = new Date();
     date.setDate(date.getDate() + i);
-    
+
     const div = document.createElement("div");
     div.className = `calendar-day ${date.toDateString() === selectedDate.toDateString() ? 'active' : ''}`;
     div.innerHTML = `
       <span class="calendar-day-number">${date.getDate()}</span>
       <span class="calendar-day-name">${days[date.getDay()]}</span>
     `;
-    
+
     div.onclick = () => {
       selectedDate = new Date(date);
       renderCalendar();
       renderDepartures();
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // ← OVO SCROLLUJE NA VRH
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    
+
     container.appendChild(div);
   }
 }
-
 
 // =======================
 // RENDER LINES
@@ -166,7 +317,6 @@ function renderLines() {
   const container = document.getElementById("lines-list");
   container.innerHTML = '<h3 class="section-title">Gradske linije</h3>';
 
-  // Sortiraj linije po ID-u (kao što su poredane u data.js)
   const sortedLines = [...LINES].sort((a, b) => a.id - b.id);
 
   sortedLines.forEach((line) => {
@@ -181,18 +331,17 @@ function renderLines() {
   });
 }
 
-
 // =======================
 // OPEN LINE DETAIL
 // =======================
 function openLineDetail(lineId) {
   currentLine = LINES.find(l => l.id == lineId);
-  
+
   if (!currentLine) {
     console.error('Line not found:', lineId);
     return;
   }
-  
+
   currentDirection = currentLine.directions[0];
   localStorage.setItem('currentLineId', lineId);
   localStorage.setItem('currentDirectionId', currentDirection.id);
@@ -209,13 +358,13 @@ function openLineDetail(lineId) {
 function renderDirectionTabsHeader() {
   const tabs = document.getElementById("directions-tabs-header");
   if (!tabs) return;
-  
+
   tabs.innerHTML = "";
   const dir = currentDirection;
-  
+
   const tab = document.createElement("div");
   tab.className = "direction-tab-header";
-  
+
   tab.innerHTML = `
     <div class="direction-icon-header">↕</div>
     <div class="direction-text-header">
@@ -224,17 +373,17 @@ function renderDirectionTabsHeader() {
       <span class="to-text-header">To ${dir.to}</span>
     </div>
   `;
-  
+
   tab.onclick = () => {
     const currentIndex = currentLine.directions.findIndex(d => d.id === currentDirection.id);
     const nextIndex = (currentIndex + 1) % currentLine.directions.length;
     currentDirection = currentLine.directions[nextIndex];
-    
+
     localStorage.setItem('currentDirectionId', currentDirection.id);
     renderDirectionTabsHeader();
     renderDepartures();
   };
-  
+
   tabs.appendChild(tab);
 }
 
@@ -256,11 +405,11 @@ function getDepartureStatus(startTime, endTime) {
   const now = new Date();
   const [startH, startM] = startTime.split(':').map(Number);
   const [endH, endM] = endTime.split(':').map(Number);
-  
+
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
   const startMinutes = startH * 60 + startM;
   const endMinutes = endH * 60 + endM;
-  
+
   if (currentMinutes < startMinutes) return 'future';
   if (currentMinutes >= startMinutes && currentMinutes <= endMinutes) return 'active';
   return 'past';
@@ -272,11 +421,10 @@ function getDepartureStatus(startTime, endTime) {
 function renderDepartures() {
   const list = document.getElementById("departures-list");
   list.innerHTML = "";
-  
+
   const dayType = getDayType(selectedDate);
   const isSchool = isSchoolDay(selectedDate);
-  
-  // Provjera da li linija saobraća na ovaj dan
+
   if (dayType === 'sunday' && currentLine.schedule.sunday === false) {
     list.innerHTML = `
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
@@ -295,7 +443,7 @@ function renderDepartures() {
           </div>
         </div>
         <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Psst... Ova linija trenutno spava.</p>
           <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
         </div>
       </div>
@@ -308,7 +456,7 @@ function renderDepartures() {
     `;
     return;
   }
-  
+
   if (dayType === 'saturday' && currentLine.schedule.saturday === false) {
     list.innerHTML = `
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
@@ -327,7 +475,7 @@ function renderDepartures() {
           </div>
         </div>
         <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Psst... Ova linija trenutno spava.</p>
           <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
         </div>
       </div>
@@ -342,7 +490,7 @@ function renderDepartures() {
   }
 
   const departures = currentDirection.departures[dayType] || [];
-  
+
   if (departures.length === 0) {
     list.innerHTML = `
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
@@ -361,7 +509,7 @@ function renderDepartures() {
           </div>
         </div>
         <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Psst... Ova linija trenutno spava.</p>
           <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
         </div>
       </div>
@@ -380,22 +528,22 @@ function renderDepartures() {
 
   departures.forEach(departure => {
     if (departure.schoolOnly && !isSchool) return;
-    
+
     const startTime = departure.time;
     const endTime = calculateArrivalTime(startTime, totalDuration);
-    
+
     const isToday = selectedDate.toDateString() === new Date().toDateString();
     const status = isToday ? getDepartureStatus(startTime, endTime) : 'future';
-    
+
     const card = document.createElement("div");
     card.className = `departure-card ${status}`;
-    
+
     card.innerHTML = `
       <span class="departure-time-start">${startTime}</span>
       <span class="departure-separator"></span>
       <span class="departure-time-end">${endTime}</span>
     `;
-    
+
     card.onclick = () => openTrip(departure);
     list.appendChild(card);
   });
@@ -408,13 +556,13 @@ function openTrip(departure) {
   localStorage.setItem('currentDepartureTime', departure.time);
 
   document.getElementById('trip-header-line').textContent = `${currentLine.number} - ${currentLine.name}`;
-  
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tripDate = new Date(selectedDate);
   tripDate.setHours(0, 0, 0, 0);
   const diffDays = Math.floor((tripDate - today) / (1000 * 60 * 60 * 24));
-  
+
   let dateText = 'Today';
   if (diffDays === 1) {
     dateText = 'Tomorrow';
@@ -423,11 +571,11 @@ function openTrip(departure) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     dateText = `${days[tripDate.getDay()]}, ${tripDate.getDate()} ${months[tripDate.getMonth()]}`;
   }
-  
+
   document.getElementById('trip-date').textContent = dateText;
 
   const list = document.getElementById("stops-list");
-  
+
   function updateStops() {
     list.innerHTML = "";
 
@@ -445,7 +593,7 @@ function openTrip(departure) {
         break;
       }
     }
-    
+
     if (currentStopIndex === -1) {
       currentStopIndex = diffMinutes < 0 ? 0 : departure.stops.length - 1;
     }
@@ -455,11 +603,11 @@ function openTrip(departure) {
       const timeLeft = arrivalMinutes - diffMinutes;
 
       const row = document.createElement("div");
-      
+
       let iconClass = '';
       let statusClass = '';
       let rowClass = 'stop-row';
-      
+
       if (index < currentStopIndex) {
         iconClass = 'passed';
         statusClass = 'gray';
@@ -484,7 +632,7 @@ function openTrip(departure) {
 
       let timeDisplay = arrivalTime;
       const isToday = selectedDate.toDateString() === new Date().toDateString();
-      
+
       if (isToday && timeLeft > 0 && timeLeft <= 10 && index >= currentStopIndex) {
         const mins = Math.round(timeLeft);
         timeDisplay = `<span class="time-number" style="font-weight: 800; font-size: 32px;">${mins}</span> <span class="time-unit">min</span>`;
@@ -514,12 +662,17 @@ function openTrip(departure) {
 // =======================
 // BACK BUTTONS
 // =======================
-document.getElementById("back-to-lines").onclick = () => {
+document.getElementById("back-to-home").onclick = () => {
   localStorage.removeItem('currentScreen');
   localStorage.removeItem('currentLineId');
   localStorage.removeItem('currentDirectionId');
   localStorage.removeItem('currentDepartureTime');
-  showScreen("screen-lines");
+
+  const lastTab = localStorage.getItem('lastActiveTab') || 'home';
+  showScreen(lastTab === 'lines' ? 'screen-lines' : 'screen-home');
+
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  document.querySelectorAll('.nav-item')[lastTab === 'lines' ? 1 : 0].classList.add('active');
 };
 
 document.getElementById("back-to-line-detail").onclick = () => {
@@ -534,12 +687,35 @@ document.getElementById("back-to-line-detail").onclick = () => {
 document.getElementById("search-input").addEventListener("input", (e) => {
   const query = e.target.value.toLowerCase();
   const items = document.querySelectorAll(".line-item");
-  
+
   items.forEach(item => {
     const text = item.textContent.toLowerCase();
     item.style.display = text.includes(query) ? "flex" : "none";
   });
 });
+
+// =======================
+// BOTTOM NAV TAB SWITCHING
+// =======================
+function switchToTab(tab) {
+  const currentScreen = localStorage.getItem('currentScreen');
+
+  if (currentScreen === 'screen-line-detail' || currentScreen === 'screen-trip') {
+    return;
+  }
+
+  localStorage.setItem('lastActiveTab', tab);
+
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  if (tab === 'lines') {
+    showScreen('screen-lines');
+  } else if (tab === 'home') {
+    showScreen('screen-home');
+    renderHomeScreen();
+  }
+}
 
 // =======================
 // RESTORE STATE
@@ -552,10 +728,10 @@ function restoreState() {
 
   if (savedScreen && savedLineId) {
     currentLine = LINES.find(l => l.id == savedLineId);
-    
+
     if (currentLine) {
       currentDirection = currentLine.directions.find(d => d.id === savedDirectionId) || currentLine.directions[0];
-      
+
       if (savedScreen === 'screen-line-detail') {
         renderCalendar();
         renderDirectionTabsHeader();
@@ -568,21 +744,24 @@ function restoreState() {
         if (departure) {
           openTrip(departure);
         } else {
-          showScreen('screen-lines');
+          showScreen('screen-home');
         }
       } else {
-        showScreen('screen-lines');
+        showScreen('screen-home');
       }
     } else {
-      showScreen('screen-lines');
+      showScreen('screen-home');
     }
   } else {
-    showScreen('screen-lines');
+    showScreen('screen-home');
   }
 }
 
 // =======================
 // INITIALIZATION
 // =======================
-renderLines();
-restoreState();
+document.addEventListener('DOMContentLoaded', () => {
+  initHomeScreen();
+  renderLines();
+  restoreState();
+});
