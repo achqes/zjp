@@ -61,9 +61,9 @@ function renderFavorites() {
           <path d="M100 60 L120 90 L150 95 L125 118 L132 150 L100 133 L68 150 L75 118 L50 95 L80 90 Z" 
                 fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
         </svg>
-        <h3>Izgleda da još nemaš spremljenu niti jednu omiljenu liniju...</h3>
-        <p style="margin-top: 8px;">Ne gubi vrijeme čekajući bus koji možda neće ni doći.</p>
-        <p style="margin-top: 12px; font-weight: 600;">Spremi svoju omiljenu liniju! 📍📊</p>
+        <h3>Izgleda da još nemaš spremljenu niti jednu omiljenu postaju...</h3>
+        <p style="margin-top: 8px;">Živi na rubu hvatajući prvu liniju koja naiđe! 📍📊</p>
+        <p style="margin-top: 12px; font-weight: 600;">Spremi postaju da ti buduće ja bude zahvalno!</p>
       </div>
     `;
   } else {
@@ -277,7 +277,6 @@ function toggleLineFavorite() {
   renderHomeScreen();
 }
 
-// Napravi globalnu funkciju dostupnu za onclick
 window.toggleLineFavorite = toggleLineFavorite;
 
 // =======================
@@ -303,7 +302,12 @@ function renderCalendar() {
       selectedDate = new Date(date);
       renderCalendar();
       renderDepartures();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Smooth scroll to top
+      const content = document.querySelector('#screen-line-detail .content');
+      if (content) {
+        content.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     };
 
     container.appendChild(div);
@@ -443,7 +447,7 @@ function renderDepartures() {
           </div>
         </div>
         <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Psst... Ova linija trenutno spava.</p>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
           <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
         </div>
       </div>
@@ -475,7 +479,7 @@ function renderDepartures() {
           </div>
         </div>
         <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Psst... Ova linija trenutno spava.</p>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
           <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
         </div>
       </div>
@@ -501,7 +505,7 @@ function renderDepartures() {
           <div style="position: absolute; top: -25px; right: -30px; font-size: 50px; opacity: 0.2;">
             <div style="animation: zzz 2s ease-in-out infinite;">z</div>
           </div>
-          <div style="position: absolute; top: -45px; right: -15px; font-size: 35px; opacity: 0.15;">
+          <div style="absolute; top: -45px; right: -15px; font-size: 35px; opacity: 0.15;">
             <div style="animation: zzz 2s ease-in-out infinite 0.3s;">z</div>
           </div>
           <div style="position: absolute; top: -60px; right: 0; font-size: 25px; opacity: 0.1;">
@@ -509,7 +513,7 @@ function renderDepartures() {
           </div>
         </div>
         <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Psst... Ova linija trenutno spava.</p>
+          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
           <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
         </div>
       </div>
@@ -526,7 +530,7 @@ function renderDepartures() {
   const firstDeparture = departures[0];
   const totalDuration = firstDeparture.stops[firstDeparture.stops.length - 1].offset;
 
-  departures.forEach(departure => {
+  departures.forEach((departure, index) => {
     if (departure.schoolOnly && !isSchool) return;
 
     const startTime = departure.time;
@@ -537,6 +541,8 @@ function renderDepartures() {
 
     const card = document.createElement("div");
     card.className = `departure-card ${status}`;
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(10px)';
 
     card.innerHTML = `
       <span class="departure-time-start">${startTime}</span>
@@ -546,6 +552,13 @@ function renderDepartures() {
 
     card.onclick = () => openTrip(departure);
     list.appendChild(card);
+
+    // Staggered fade-in animation
+    setTimeout(() => {
+      card.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, index * 30); // 30ms delay between each card
   });
 }
 
