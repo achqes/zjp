@@ -5,9 +5,9 @@
 const OBAVIJESTI = [
   {
     id: 1,
-    badge: "Stanje",
-    title: "Autobusni promet redovit je na svim linijama",
-    content: "Trenutno nema nikakvih promjena.",
+    badge: "Obavijest",
+    title: "JAVNI PRIJEVOZ",
+    content: "Autobusni promet je redovit bez ikakvih promjena.",
     timestamp: "2026-01-22T12:00:00Z"
   }
 ];
