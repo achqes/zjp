@@ -1,16 +1,46 @@
 // =======================
 // OBAVIJESTI DATA
 // =======================
-
 const OBAVIJESTI = [
   {
     id: 1,
-    badge: "Obavijest",
-    title: "JAVNI PRIJEVOZ",
-    content: "Autobusni promet je redovit bez ikakvih promjena.",
-    timestamp: "2026-01-22T12:00:00Z"
+    badge: "Podsjećamo",
+    badgeColor: "#8b1616", // Crvena boja za badge
+    icon: "📢", // Emoji ikona
+    title: "Promet na podsljednjim dnevnim polascima se odvija brže!",
+    content: "Kako bi bio siguran da ćeš stići na svoje odredište, preporučujemo da na svoju željenu stanicu dođeš 5 do 10 minuta ranije. <br><br>Ponekad vozači zbog praznih cesta stignu ranije. Nemoj dopustiti da ti bus pobjegne!",
+    timestamp: "2026-02-25T12:00:00Z",
+    expiresInDays: 1000 // Notifikacija nestaje nakon 30 dana
+  },
+  {
+    id: 2,
+    badge: "Informacije",
+    badgeColor: "#1752aa", // Tirkizna boja
+    icon: "🕒",
+    title: "Gdje mi je bus?",
+    content: "Vremena polazaka na usputnim stanicama su okvirna i informativnog karaktera. Zbog stanja u prometu, bus <em>može</em> stići <strong>±3 minute</strong> u odnosu na upisani termin. <br><br><strong>Preporuka</strong>: Dođi na stanicu malo ranije kako bi tvoje putovanje bilo sigurno!",
+    timestamp: "2026-02-25T08:00:00Z",
+    expiresInDays: 1000
+  },
+    {
+    id: 3,
+    badge: "Podsjećamo",
+    badgeColor: "#8b1616", // Tirkizna boja
+    icon: "📢",
+    title: "zePrevoz je u testnoj fazi!",
+    content: "Aplikacija je trenutno u <strong>Beta fazi testiranja</strong>. To znači da su greške moguće, a tvoje povratne informacije puno vrijede! <br><br>Primijetio si bug ili krivi red vožnje? Javi nam se: <strong>markoopacak08@gmail.com</strong>. <br><br>Hvala ti što nam pomažeš da napravimo gradski prevoz lakšim za korištenje! ",
+    timestamp: "2026-02-25T08:00:00Z",
+    expiresInDays: 1000
   }
 ];
+
+// Funkcija za provjeru da li je notifikacija istekla
+function isNotificationExpired(notification) {
+  const now = new Date();
+  const expiryDate = new Date(notification.timestamp);
+  expiryDate.setDate(expiryDate.getDate() + notification.expiresInDays);
+  return now > expiryDate;
+}
 
 // Funkcija za formatiranje vremena
 function formatNotificationTime(timestamp) {
