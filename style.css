@@ -9,10 +9,10 @@ body {
   background: rgba(33, 33, 33, 1);
   color: rgba(228, 228, 228, 1);
   height: 100vh;
-  overflow: hidden;
   max-width: 428px;
   margin: 0 auto;
 }
+
 
 /* DYNAMIC HEADER */
 .top-bar {
@@ -1001,7 +1001,7 @@ h3.section-title {
 .notification-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 1px;
   margin-bottom: 8px;
 }
 
@@ -1054,4 +1054,48 @@ h3.section-title {
   margin-bottom: 16px;
   opacity: 0.3;
   fill: currentColor;
+}
+
+.notification-icon-custom {
+  font-size: 20px;
+  margin-right: 2px;
+  line-height: 1;
+}
+
+.notification-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  min-width: 32px;
+  text-align: center;
+  margin-right: auto;
+  transition: all 0.2s ease;
+}
+
+.notification-card:hover .notification-badge {
+  transform: scale(1.05);
+}
+
+.notification-icon-svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-icon-svg svg {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1); /* Bijela boja */
+  transition: all 0.2s ease;
+}
+
+.notification-card:hover .notification-icon-svg svg {
+  transform: scale(1.1);
+  filter: brightness(0) invert(1) drop-shadow(0 1px 3px rgba(255,255,255,0.3));
 }
