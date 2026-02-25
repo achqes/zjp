@@ -37,23 +37,6 @@
   <button class="back-btn hidden" id="back-to-line-detail">←</button>
 
 
-  <!-- HOME SCREEN (TAB 1 - POČETNA) -->
-  <div class="screen active" id="screen-home">
-    <div class="content with-header">
-      <div class="home-tabs">
-        <button class="home-tab active" data-tab="favorites">Favoriti</button>
-        <button class="home-tab" data-tab="notifications">Obavijesti</button>
-      </div>
-
-      <div id="home-tab-favorites" class="home-tab-content active">
-        <div id="favorites-list"></div>
-      </div>
-
-      <div id="home-tab-notifications" class="home-tab-content">
-        <div id="notifications-list"></div>
-      </div>
-    </div>
-  </div>
 
 
   <!-- LINES SCREEN (TAB 2 - RASPORED) -->
@@ -84,6 +67,24 @@
       <div id="stops-list"></div>
     </div>
   </div>
+
+  <div id="screen-home" class="screen active">
+  <div class="content">
+    <!-- Tabs scrollaju sa content-om -->
+    <div class="home-tabs">
+      <div class="home-tab active" data-tab="notifications">Obavijesti</div>
+      <div class="home-tab" data-tab="favorites">Omiljeni</div>
+    </div>
+    
+    <!-- Content scrolluje normalno -->
+    <div id="home-tab-notifications" class="home-tab-content active">
+      <div id="notifications-list"></div>
+    </div>
+    <div id="home-tab-favorites" class="home-tab-content">
+      <div id="favorites-list"></div>
+    </div>
+  </div>
+</div>
 
 
   <!-- BOTTOM NAVIGATION -->
