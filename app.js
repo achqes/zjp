@@ -61,9 +61,9 @@ function renderFavorites() {
           <path d="M100 60 L120 90 L150 95 L125 118 L132 150 L100 133 L68 150 L75 118 L50 95 L80 90 Z" 
                 fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
         </svg>
-        <h3>Izgleda da još nemaš spremljenu niti jednu omiljenu postaju...</h3>
-        <p style="margin-top: 8px;">Živi na rubu hvatajući prvu liniju koja naiđe! 📍📊</p>
-        <p style="margin-top: 12px; font-weight: 600;">Spremi postaju da ti buduće ja bude zahvalno!</p>
+        <h3>Izgleda da još nemaš spremljenu niti jednu omiljenu liniju...</h3>
+        <p style="margin-top: 8px;">Živi na rubu vozeči se nasumičnim linijama dok ne saznaš koja je za tebe!</p>
+        <p style="margin-top: 12px; font-weight: 600;">Spremi liniju da ti bude lakše.</p>
       </div>
     `;
   } else {
@@ -71,10 +71,16 @@ function renderFavorites() {
   }
 }
 
-function renderNotifications() {
-  const container = document.getElementById('notifications-list');
 
-  if (typeof OBAVIJESTI === 'undefined' || OBAVIJESTI.length === 0) {
+function renderNotifications() {
+const container = document.getElementById('notifications-list');
+
+  // Filtriraj aktivne notifikacije
+  const activeNotifications = (typeof OBAVIJESTI !== 'undefined' && OBAVIJESTI) 
+    ? OBAVIJESTI.filter(notif => !isNotificationExpired(notif))
+    : [];
+
+  if (activeNotifications.length === 0) {
     container.innerHTML = `
       <div class="notification-empty">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -85,7 +91,7 @@ function renderNotifications() {
       </div>
     `;
   } else {
-    const sortedNotifications = [...OBAVIJESTI].sort((a, b) => 
+    const sortedNotifications = [...activeNotifications].sort((a, b) => 
       new Date(b.timestamp) - new Date(a.timestamp)
     );
 
@@ -97,10 +103,10 @@ function renderNotifications() {
       return `
         <div class="notification-card">
           <div class="notification-header">
-            <svg class="notification-icon" viewBox="0 0 24 24">
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-            </svg>
-            <span class="notification-badge">${notif.badge}</span>
+            <span class="notification-icon-custom">${notif.icon}</span>
+            <span class="notification-badge" style="background-color: ${notif.badgeColor}">
+              ${notif.badge}
+            </span>
             <span class="notification-time">${timeDisplay}</span>
           </div>
           <div class="notification-title">${notif.title}</div>
@@ -110,6 +116,7 @@ function renderNotifications() {
     }).join('');
   }
 }
+
 
 function createLineCard(line) {
   const route = `${line.directions[0].from} → ${line.directions[0].to}`;
