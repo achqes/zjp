@@ -189,23 +189,29 @@ function showScreen(id) {
   const bTrip = document.getElementById('back-to-line-detail');
   const tripHeader = document.getElementById('trip-header-container');
   const mainHeader = document.getElementById('main-header');
-  const bottomNav = document.querySelector('.bottom-nav');
 
-  bHome.classList.add('hidden');
-  bTrip.classList.add('hidden');
-
+  // Resetiramo status back dugmadi
+  if (bHome) bHome.classList.add('hidden');
+  if (bTrip) bTrip.classList.add('hidden');
+  
   if (tripHeader) tripHeader.style.display = 'none';
-  mainHeader.classList.remove('hidden');
-  bottomNav.style.display = 'flex';
+
+  if (id === 'screen-map') {
+    mainHeader.classList.add('hidden');
+  } else {
+    mainHeader.classList.remove('hidden');
+  }
+
+  // OVO JE BIO PROBLEM:
+  // Prije si imao naredbe `bottomNav.style.display = 'none'`
+  // Sada ih više nema, navigacija će ostati vidljiva svugdje!
 
   if (id === 'screen-line-detail') {
-    bHome.classList.remove('hidden');
-    bottomNav.style.display = 'none';
+    if (bHome) bHome.classList.remove('hidden');
   } else if (id === 'screen-trip') {
-    bTrip.classList.remove('hidden');
+    if (bTrip) bTrip.classList.remove('hidden');
     if (tripHeader) tripHeader.style.display = 'block';
     mainHeader.classList.add('hidden');
-    bottomNav.style.display = 'none';
   }
 
   updateHeader(id);
@@ -222,6 +228,19 @@ function updateHeader(screen) {
   const directionsHeader = document.getElementById('directions-tabs-header');
   const favoriteBtn = document.getElementById('favorite-btn');
 
+  if (screen === 'screen-map') {
+    headerTitle.classList.add('hidden');
+    headerSubtitle.classList.add('hidden');
+    searchBar.classList.add('hidden');
+    calendarStrip.classList.add('hidden');
+    directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
+    document.getElementById('main-header').classList.add('hidden');
+    return;
+  } else {
+    document.getElementById('main-header').classList.remove('hidden');
+  }
+
   if (screen === 'screen-home') {
     headerTitle.textContent = 'Početna';
     headerTitle.classList.remove('hidden');
@@ -231,15 +250,23 @@ function updateHeader(screen) {
     directionsHeader.classList.add('hidden');
     favoriteBtn.classList.add('hidden');
   } else if (screen === 'screen-lines') {
-    headerTitle.textContent = 'Timetable';
+    headerTitle.textContent = 'Raspored';
     headerTitle.classList.remove('hidden');
     headerSubtitle.classList.add('hidden');
     searchBar.classList.remove('hidden');
     calendarStrip.classList.add('hidden');
     directionsHeader.classList.add('hidden');
     favoriteBtn.classList.add('hidden');
+  } else if (screen === 'screen-info') {
+    headerTitle.textContent = 'Informacije'; // NASLOV ZA INFO EKRAN
+    headerTitle.classList.remove('hidden');
+    headerSubtitle.classList.add('hidden');
+    searchBar.classList.add('hidden');
+    calendarStrip.classList.add('hidden');
+    directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
   } else if (screen === 'screen-line-detail') {
-    headerTitle.textContent = 'Route departures';
+    headerTitle.textContent = 'Polasci';
     headerTitle.classList.remove('hidden');
     headerSubtitle.textContent = currentLine.number;
     headerSubtitle.classList.remove('hidden');
@@ -361,6 +388,13 @@ function openLineDetail(lineId) {
   renderDirectionTabsHeader();
   renderDepartures();
   showScreen("screen-line-detail");
+  
+  // Draw route on map (if map tab will be used)
+  setTimeout(() => {
+    if (window.busMap) {
+      drawRouteWithAnimation(lineId, currentDirection.id);
+    }
+  }, 100);
 }
 
 // =======================
@@ -393,6 +427,11 @@ function renderDirectionTabsHeader() {
     localStorage.setItem('currentDirectionId', currentDirection.id);
     renderDirectionTabsHeader();
     renderDepartures();
+    
+    // Update route visualization when direction changes
+    if (window.busMap) {
+      drawRouteWithAnimation(currentLine.id, currentDirection.id);
+    }
   };
 
   tabs.appendChild(tab);
@@ -646,8 +685,9 @@ function openTrip(departure) {
       const arrivalDate = new Date(departureDate.getTime() + arrivalMinutes * 60000);
       const arrivalTime = `${String(arrivalDate.getHours()).padStart(2, '0')}:${String(arrivalDate.getMinutes()).padStart(2, '0')}`;
 
-      const busIcon = (index === currentStopIndex) 
-        ? '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>'
+      const isBusHere = (index === currentStopIndex);
+      const busIconHtml = isBusHere
+        ? `<div class="stop-icon-bus"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg></div>`
         : '';
 
       let timeDisplay = arrivalTime;
@@ -655,12 +695,12 @@ function openTrip(departure) {
 
       if (isToday && timeLeft > 0 && timeLeft <= 10 && index >= currentStopIndex) {
         const mins = Math.round(timeLeft);
-        timeDisplay = `<span class="time-number" style="font-weight: 800; font-size: 32px;">${mins}</span> <span class="time-unit">min</span>`;
+        timeDisplay = `<span class="time-number">${mins}</span><span class="time-unit">min</span>`;
       }
 
       row.innerHTML = `
         <div class="stop-icon ${iconClass}">
-          ${busIcon}
+          ${busIconHtml}
         </div>
         <div class="stop-content ${statusClass}">
           <span class="stop-name">${stop.name}</span>
@@ -718,22 +758,38 @@ document.getElementById("search-input").addEventListener("input", (e) => {
 // BOTTOM NAV TAB SWITCHING
 // =======================
 function switchToTab(tab) {
-  const currentScreen = localStorage.getItem('currentScreen');
-
-  if (currentScreen === 'screen-line-detail' || currentScreen === 'screen-trip') {
-    return;
-  }
-
+  // 1. Ažuriraj aktivno stanje
   localStorage.setItem('lastActiveTab', tab);
 
-  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  // 2. Očisti aktivnu klasu sa svih navigacijskih stavki
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => item.classList.remove('active'));
 
+  // 3. Postavi aktivnu klasu na odgovarajuću stavku (po indeksu)
+  const tabIndexMap = { home: 0, lines: 1, map: 2, info: 3 };
+  if (tabIndexMap[tab] !== undefined) {
+    navItems[tabIndexMap[tab]].classList.add('active');
+  }
+
+  // 4. Prebaci ekran
   if (tab === 'lines') {
     showScreen('screen-lines');
   } else if (tab === 'home') {
     showScreen('screen-home');
-    renderHomeScreen();
+  } else if (tab === 'info') {
+    showScreen('screen-info');
+  } else if (tab === 'map') {
+    showScreen('screen-map');
+    // Inicijalizira mapu pri prvom otvaranju, pa invalidira veličinu
+    setTimeout(() => {
+      if (typeof initBusMap === 'function') initBusMap();
+      if (window.busMap) window.busMap.invalidateSize();
+      
+      // Draw route if a line is currently selected
+      if (currentLine && currentDirection && typeof drawRouteWithAnimation === 'function') {
+        drawRouteWithAnimation(currentLine.id, currentDirection.id);
+      }
+    }, 50);
   }
 }
 
@@ -745,6 +801,15 @@ function restoreState() {
   const savedLineId = localStorage.getItem('currentLineId');
   const savedDirectionId = localStorage.getItem('currentDirectionId');
   const savedDepartureTime = localStorage.getItem('currentDepartureTime');
+
+  // Postavi aktivni nav item na osnovu zadnjeg taba
+  const lastTab = localStorage.getItem('lastActiveTab') || 'home';
+  const tabIndexMap = { home: 0, lines: 1, map: 2, info: 3 };
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => item.classList.remove('active'));
+  if (tabIndexMap[lastTab] !== undefined) {
+    navItems[tabIndexMap[lastTab]].classList.add('active');
+  }
 
   if (savedScreen && savedLineId) {
     currentLine = LINES.find(l => l.id == savedLineId);

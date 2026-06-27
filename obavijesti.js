@@ -21,17 +21,7 @@ const OBAVIJESTI = [
     content: "Vremena polazaka na usputnim stanicama su okvirna i informativnog karaktera. Zbog stanja u prometu, bus <em>može</em> stići <strong>±3 minute</strong> u odnosu na upisani termin. <br><br><strong>Preporuka</strong>: Dođi na stanicu malo ranije kako bi tvoje putovanje bilo sigurno!",
     timestamp: "2026-02-25T08:00:00Z",
     expiresInDays: 1000
-  },
-    {
-    id: 3,
-    badge: "Podsjećamo",
-    badgeColor: "#8b1616", // Tirkizna boja
-    icon: "📢",
-    title: "zePrevoz je u testnoj fazi!",
-    content: "Aplikacija je trenutno u <strong>Beta fazi testiranja</strong>. To znači da su greške moguće, a tvoje povratne informacije puno vrijede! <br><br>Primijetio si bug ili krivi red vožnje? Javi nam se: <strong>markoopacak08@gmail.com</strong>. <br><br>Hvala ti što nam pomažeš da napravimo gradski prevoz lakšim za korištenje! ",
-    timestamp: "2026-02-25T08:00:00Z",
-    expiresInDays: 1000
-  }
+}    
 ];
 
 // Funkcija za provjeru da li je notifikacija istekla

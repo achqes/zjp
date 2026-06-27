@@ -2,8 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Timetable</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>zePrevoz</title>
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=Tvoj-GA-ID-Ovdje"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'Tvoj-GA-ID-Ovdje');
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;600;700&display=swap" rel="stylesheet">
@@ -11,7 +23,6 @@
 </head>
 <body>
 
-  <!-- FIXED HEADER -->
   <div class="top-bar" id="main-header">
     <div class="top-nav">
       <span id="header-title">Početna</span>
@@ -24,90 +35,103 @@
         <circle cx="11" cy="11" r="7" fill="none" stroke="rgb(150,150,150)" stroke-width="2"/>
         <line x1="16" y1="16" x2="21" y2="21" stroke="rgb(150,150,150)" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      <input type="text" id="search-input" placeholder="Find your route" />
+      <input type="text" id="search-input" placeholder="Pronađi liniju..." />
     </div>
 
     <div class="calendar-strip hidden" id="calendar-strip"></div>
     <div id="directions-tabs-header" class="hidden"></div>
   </div>
 
-
-  <!-- BACK BUTTONS -->
   <button class="back-btn hidden" id="back-to-home">←</button>
   <button class="back-btn hidden" id="back-to-line-detail">←</button>
 
+  <div id="screen-home" class="screen active">
+    <div class="content">
+      <div class="home-tabs">
+        <div class="home-tab active" data-tab="notifications">Obavijesti</div>
+        <div class="home-tab" data-tab="favorites">Omiljene</div>
+      </div>
+      <div id="home-tab-notifications" class="home-tab-content active">
+        <div id="notifications-list"></div>
+      </div>
+      <div id="home-tab-favorites" class="home-tab-content">
+        <div id="favorites-list"></div>
+      </div>
+    </div>
+  </div>
 
-
-
-  <!-- LINES SCREEN (TAB 2 - RASPORED) -->
   <div class="screen" id="screen-lines">
     <div class="content with-header">
       <div id="lines-list"></div>
     </div>
   </div>
 
-
-  <!-- LINE DETAIL SCREEN -->
   <div class="screen" id="screen-line-detail">
     <div class="content with-expanded-header">
       <div id="departures-list"></div>
     </div>
   </div>
 
+  <div class="screen" id="screen-info">
+    <div class="content with-header">
+      <h3 class="section-title" style="margin-top: 10px;">O PLATFORMI</h3>
+      
+      <div class="line-item" onclick="window.open('https://zenicatrans.com', '_blank')">
+        <div class="line-number" style="background: transparent; font-size: 24px;">🌐</div>
+        <span>Zvanični sajt prevoza</span>
+      </div>
 
-  <!-- TRIP SCREEN -->
+      <div class="line-item" onclick="window.location.href='mailto:markoopacak08@gmail.com'">
+        <div class="line-number" style="background: transparent; font-size: 24px;">✉️</div>
+        <span>Prijavi grešku (Email)</span>
+      </div>
+
+      <h3 class="section-title" style="margin-top: 30px;">SISTEM</h3>
+      <p style="color: rgba(150, 150, 150, 1); padding: 0 16px; font-size: 14px; line-height: 1.5;">
+        <strong>zePrevoz v1.0 (Beta)</strong><br>
+        Razvijeno u Zenici. Podaci su informativnog karaktera i mogu odstupati zbog stanja u saobraćaju.
+      </p>
+    </div>
+  </div>
+
   <div class="screen" id="screen-trip">
     <div class="trip-header" id="trip-header-container">
-      <div class="trip-header-top">Route departures</div>
-      <div class="trip-header-line" id="trip-header-line">1 - Bolnica - Donja Gračanica</div>
-      <div class="trip-header-date" id="trip-date">Today</div>
+      <div class="trip-header-top">Detalji polaska</div>
+      <div class="trip-header-line" id="trip-header-line"></div>
+      <div class="trip-header-date" id="trip-date">Danas</div>
     </div>
-
     <div class="content trip-content">
       <div id="stops-list"></div>
     </div>
   </div>
 
-  <div id="screen-home" class="screen active">
-  <div class="content">
-    <!-- Tabs scrollaju sa content-om -->
-    <div class="home-tabs">
-      <div class="home-tab active" data-tab="notifications">Obavijesti</div>
-      <div class="home-tab" data-tab="favorites">Omiljeni</div>
-    </div>
-    
-    <!-- Content scrolluje normalno -->
-    <div id="home-tab-notifications" class="home-tab-content active">
-      <div id="notifications-list"></div>
-    </div>
-    <div id="home-tab-favorites" class="home-tab-content">
-      <div id="favorites-list"></div>
-    </div>
+  <div id="screen-map" class="screen">
+    <div id="map-container" style="width: 100%; height: 100%;"></div>
   </div>
-</div>
 
-
-  <!-- BOTTOM NAVIGATION -->
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchToTab('home')">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
+<div class="bottom-nav">
+    <div class="nav-item" onclick="switchToTab('home')">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       <span>Početna</span>
     </div>
-
     <div class="nav-item" onclick="switchToTab('lines')">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
-      </svg>
-      <span>Raspored</span>
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+      <span>Linije</span>
     </div>
-  </div>
+    <div class="nav-item" onclick="switchToTab('map')">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+      <span>Mapa</span>
+    </div>
+    <div class="nav-item" onclick="switchToTab('info')">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+      <span>Info</span>
+    </div>
+</div>
 
-
-  <!-- SCRIPTS -->
   <script src="data.js"></script>
+  <script src="physical_stops.js"></script>
   <script src="obavijesti.js"></script>
   <script src="app.js"></script>
+  <script src="map.js"></script>
 </body>
 </html>
