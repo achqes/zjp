@@ -65,159 +65,82 @@ function stopUserLocationTracking() {
 }
 
 // =======================
-// ARRIVALS FOR A SPECIFIC STOP + DIRECTION SIDE
-// directionsFilter: array of direction.to strings this marker side serves
+// ROUTE VISUALIZATION
 // =======================
 
-function getArrivalsForStop(stopName, directionsFilter) {
-  const now = new Date();
-  const dayOfWeek = now.getDay();
-  let dayType = 'workdays';
-  if (dayOfWeek === 0) dayType = 'sunday';
-  else if (dayOfWeek === 6) dayType = 'saturday';
-
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  const arrivals = [];
-
-  LINES.forEach(line => {
-    line.directions.forEach(direction => {
-      // If we have a directionsFilter, only show buses whose direction.to matches
-      if (directionsFilter && directionsFilter.length > 0) {
-        const dirTo = direction.to;
-        const matches = directionsFilter.some(df => {
-          // df is like "prema Bolnici", dirTo is like "Bolnica"
-          const dfClean = df.replace('prema ', '').toLowerCase();
-          return dirTo.toLowerCase().includes(dfClean) || dfClean.includes(dirTo.toLowerCase());
-        });
-        if (!matches) return;
-      }
-
-      const departures = direction.departures[dayType] || [];
-      departures.forEach(departure => {
-        const stopEntry = departure.stops.find(s => s.name === stopName);
-        if (!stopEntry) return;
-
-        const [depH, depM] = departure.time.split(':').map(Number);
-        const depMinutes = depH * 60 + depM;
-        const arrivalMinutes = depMinutes + stopEntry.offset;
-        const minutesFromNow = arrivalMinutes - nowMinutes;
-
-        if (minutesFromNow >= -2 && minutesFromNow <= 90) {
-          const totalMin = arrivalMinutes % (24 * 60);
-          const h = Math.floor(((totalMin % 1440) + 1440) % 1440 / 60);
-          const m = ((totalMin % 60) + 60) % 60;
-          const arrivalTime = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-
-          arrivals.push({
-            lineNumber: line.number,
-            lineName: line.name,
-            direction: direction.to,
-            directionId: direction.id,
-            arrivalTime,
-            minutesFromNow: Math.round(minutesFromNow),
-            lineId: line.id
-          });
-        }
-      });
-    });
-  });
-
-  arrivals.sort((a, b) => a.minutesFromNow - b.minutesFromNow);
-  return arrivals;
-}
-
+/**
+ * Otvara modal sa informacijama o stanici i proračunava dolaske
+ * stop_obj = { name, lat, lng }
+ */
 // =======================
 // STOP SHEET UI
 // =======================
 
-function openStopSheet(stop, directionsFilter) {
-  const existing = document.getElementById('stop-sheet');
-  if (existing) existing.remove();
+function openStopSheet(stop_obj) {
+  const sheet = document.getElementById('stop-sheet');
+  const backdrop = document.getElementById('stop-sheet-backdrop');
+  const arrivalsContainer = document.getElementById('stop-sheet-arrivals');
+  const stopNameEl = document.getElementById('stop-sheet-name');
 
-  const arrivals = getArrivalsForStop(stop.name, directionsFilter);
+  if (!sheet || !arrivalsContainer || !stopNameEl) {
+    console.error("Stop sheet elementi nisu pronađeni u HTML-u!");
+    return;
+  }
 
-  const sheet = document.createElement('div');
-  sheet.id = 'stop-sheet';
-  sheet.className = 'stop-sheet';
+  stopNameEl.textContent = stop_obj.name;
 
-  const mapsUrl = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    ? `maps://maps.apple.com/?daddr=${stop.lat},${stop.lng}&dirflg=d`
-    : `https://www.google.com/maps/dir/?api=1&destination=${stop.lat},${stop.lng}&travelmode=transit`;
+  // Pronađi autobuse samo za ovu specifičnu stranu ulice
+  const arrivals = getArrivalsAtCoordinate(stop_obj.name, stop_obj.lat, stop_obj.lng);
 
-  let arrivalsHTML = '';
   if (arrivals.length === 0) {
-    arrivalsHTML = `
+    arrivalsContainer.innerHTML = `
       <div class="stop-sheet-empty">
-        <span style="font-size:32px;opacity:0.4">🚌</span>
-        <p>Nema polazaka u sljedećih 90 minuta</p>
+        <p>Trenutno nema planiranih polazaka u sljedećih 90 minuta.</p>
       </div>`;
   } else {
-    arrivalsHTML = arrivals.map(a => {
-      let timeLabel = '';
-      if (a.minutesFromNow <= 0) {
-        timeLabel = `<span class="stop-arrival-now">Sada</span>`;
-      } else if (a.minutesFromNow <= 5) {
-        timeLabel = `<span class="stop-arrival-soon">${a.minutesFromNow} min</span>`;
+    arrivalsContainer.innerHTML = arrivals.map(bus => {
+      let countdownClass, countdownText;
+      if (bus.minutesFromNow <= 1) {
+        countdownClass = 'stop-arrival-now';
+        countdownText = 'Sada';
+      } else if (bus.minutesFromNow <= 10) {
+        countdownClass = 'stop-arrival-soon';
+        countdownText = `${bus.minutesFromNow} min`;
       } else {
-        timeLabel = `<span class="stop-arrival-time">${a.minutesFromNow} min</span>`;
+        countdownClass = 'stop-arrival-time';
+        countdownText = `${bus.minutesFromNow} min`;
       }
 
       return `
-        <div class="stop-arrival-row" onclick="openLineFromStop(${a.lineId})">
-          <div class="stop-arrival-line-badge">${a.lineNumber}</div>
+        <div class="stop-arrival-row" onclick="openLineFromStop(${bus.lineId})">
+          <div class="stop-arrival-line-badge">${bus.lineNumber}</div>
           <div class="stop-arrival-info">
-            <div class="stop-arrival-direction">→ ${a.direction}</div>
-            <div class="stop-arrival-clock">${a.arrivalTime}</div>
+            <div class="stop-arrival-direction">${bus.directionTo}</div>
+            <div class="stop-arrival-from">iz ${bus.directionFrom} · ${bus.arrivalTime}</div>
           </div>
-          <div class="stop-arrival-countdown">${timeLabel}</div>
-        </div>`;
+          <div class="stop-arrival-countdown">
+            <span class="${countdownClass}">${countdownText}</span>
+          </div>
+        </div>
+      `;
     }).join('');
   }
 
-  sheet.innerHTML = `
-    <div class="stop-sheet-handle"></div>
-    <div class="stop-sheet-header">
-      <div class="stop-sheet-title-row">
-        <div class="stop-sheet-icon">🚏</div>
-        <div class="stop-sheet-name">${stop.name}</div>
-        <button class="stop-sheet-close" onclick="closeStopSheet()">✕</button>
-      </div>
-      <a class="stop-sheet-directions-btn" href="${mapsUrl}" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.71 11.29l-9-9a1 1 0 0 0-1.42 0l-9 9a1 1 0 0 0 0 1.42l9 9a1 1 0 0 0 1.42 0l9-9a1 1 0 0 0 0-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 0 1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg>
-        Upute do stanice
-      </a>
-    </div>
-    <div class="stop-sheet-section-title">Sljedeći polasci</div>
-    <div class="stop-sheet-arrivals">${arrivalsHTML}</div>
-  `;
-
-  document.body.appendChild(sheet);
-
-  const backdrop = document.createElement('div');
-  backdrop.id = 'stop-sheet-backdrop';
-  backdrop.className = 'stop-sheet-backdrop';
-  backdrop.onclick = closeStopSheet;
-  document.body.appendChild(backdrop);
-
-  requestAnimationFrame(() => {
-    sheet.classList.add('open');
-    backdrop.classList.add('open');
-  });
+  sheet.classList.add('open');
+  backdrop.classList.add('open');
 }
 
+// Dodaj i funkciju za zatvaranje
 function closeStopSheet() {
-  const sheet = document.getElementById('stop-sheet');
-  const backdrop = document.getElementById('stop-sheet-backdrop');
-  if (sheet) { sheet.classList.remove('open'); setTimeout(() => sheet.remove(), 300); }
-  if (backdrop) { backdrop.classList.remove('open'); setTimeout(() => backdrop.remove(), 300); }
+  document.getElementById('stop-sheet').classList.remove('open');
+  document.getElementById('stop-sheet-backdrop').classList.remove('open');
 }
 
+// Funkcija koja omogućava da klikneš na bus u stanici i otvoriš tu liniju
 function openLineFromStop(lineId) {
   closeStopSheet();
-  setTimeout(() => {
-    switchToTab('lines');
-    setTimeout(() => openLineDetail(lineId), 50);
-  }, 200);
+  switchToTab('lines');
+  openLineDetail(lineId);
 }
 
 // =======================
@@ -227,6 +150,7 @@ function openLineFromStop(lineId) {
 let currentRouteLayer = null;
 
 function drawRouteWithAnimation(lineId, directionId) {
+  if (!window.busMap) return; // Mapa još nije inicijalizirana
   if (currentRouteLayer) {
     currentRouteLayer.clearLayers();
   } else {
@@ -247,15 +171,17 @@ function drawRouteWithAnimation(lineId, directionId) {
   const departures = direction.departures[dayType] || [];
   if (departures.length === 0) return;
 
-  const firstDeparture = departures[0];
+  const firstDeparture = departures;
   const now = new Date();
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
   const coordsArray = [];
   let passedStopsCount = 0;
 
-  firstDeparture.stops.forEach((stopInfo, index) => {
-    const coords = getStopCoordinates(stopInfo.name, direction.to);
+  firstDeparture.stops.forEach((stopInfo) => {
+    // getStopCoordinates sada vraća null za hidden stanice
+    const coords = getStopCoordinates(stopInfo.name, direction.to, direction.from);
+    
     if (coords) {
       const isPassed = stopInfo.offset <= nowMinutes;
       if (isPassed) passedStopsCount++;
@@ -277,6 +203,7 @@ function drawRouteWithAnimation(lineId, directionId) {
     }
   });
 
+  // Iscrtavanje linija samo preko valjanih koordinata
   if (coordsArray.length >= 2) {
     const passedCoords = coordsArray.slice(0, Math.max(passedStopsCount, 0)).map(s => s.latLng);
     const upcomingCoords = coordsArray.slice(Math.max(passedStopsCount - 1, 0)).map(s => s.latLng);
@@ -290,11 +217,15 @@ function drawRouteWithAnimation(lineId, directionId) {
   }
 
   setTimeout(() => {
-    if (currentRouteLayer.getBounds().isValid()) {
-      window.busMap.fitBounds(currentRouteLayer.getBounds(), { padding: [50, 50] });
-    }
-  }, 100);
-}
+      if (currentRouteLayer && currentRouteLayer.getBounds && currentRouteLayer.getBounds().isValid()) {
+        window.busMap.fitBounds(currentRouteLayer.getBounds(), { padding: [20, 20] });
+      }
+    }, 50);
+  }
+
+  function clearRoute() {
+    if (currentRouteLayer) currentRouteLayer.clearLayers();
+  }
 
 function clearRoute() {
   if (currentRouteLayer) currentRouteLayer.clearLayers();
@@ -307,6 +238,9 @@ function clearRoute() {
 function initBusMap() {
   if (mapInitialized) return;
   mapInitialized = true;
+
+  // Sagradi mapu koja povezuje svaku fizičku lokaciju sa smjerovima
+  buildStopDirectionMap();
 
   window.busMap = L.map('map-container', { zoomControl: false }).setView([44.2070, 17.9130], 14);
 
@@ -343,9 +277,6 @@ function initBusMap() {
       const allCoords = getAllStopCoordinates(stopName);
 
       allCoords.forEach(coordEntry => {
-        // Find which directions use this exact coordinate
-        const sidesDirections = getDirectionsForStopCoord(stopName, coordEntry.lat, coordEntry.lng);
-
         const stop_obj = {
           name: stopName,
           lat: coordEntry.lat,
@@ -355,8 +286,8 @@ function initBusMap() {
         const marker = L.marker([coordEntry.lat, coordEntry.lng], { icon: makeStopIcon(zoom) })
           .addTo(window.busMap)
           .on('click', () => {
-            // Pass the directions this side serves so we only show relevant buses
-            openStopSheet(stop_obj, sidesDirections);
+            // Prosledi samo stop_obj sa koordinatama - sve ostalo se računa iz STOP_DIRECTION_MAP
+            openStopSheet(stop_obj);
           });
 
         if (zoom >= 15) {

@@ -109,6 +109,21 @@
     <div id="map-container" style="width: 100%; height: 100%;"></div>
   </div>
 
+<!-- STOP SHEET - bottom drawer for stop arrivals -->
+<div class="stop-sheet-backdrop" id="stop-sheet-backdrop" onclick="closeStopSheet()"></div>
+<div class="stop-sheet" id="stop-sheet">
+  <div class="stop-sheet-handle"></div>
+  <div class="stop-sheet-header">
+    <div class="stop-sheet-title-row">
+      <span class="stop-sheet-icon">🚏</span>
+      <span class="stop-sheet-name" id="stop-sheet-name"></span>
+      <button class="stop-sheet-close" onclick="closeStopSheet()">✕</button>
+    </div>
+  </div>
+  <div class="stop-sheet-section-title">Sljedeći polasci</div>
+  <div class="stop-sheet-arrivals" id="stop-sheet-arrivals"></div>
+</div>
+
 <div class="bottom-nav">
     <div class="nav-item" onclick="switchToTab('home')">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -128,10 +143,11 @@
     </div>
 </div>
 
-  <script src="data.js"></script>
-  <script src="physical_stops.js"></script>
-  <script src="obavijesti.js"></script>
-  <script src="app.js"></script>
-  <script src="map.js"></script>
+<script src="physical_stops.js"></script>
+<script src="data.js"></script>
+<script src="obavijesti.js"></script>              <!-- ✅ DODANO! -->
+<script src="stop_direction_map.js"></script>
+<script src="map.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

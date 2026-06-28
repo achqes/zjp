@@ -842,6 +842,48 @@ function restoreState() {
   }
 }
 
+/**
+ * Računa koliko minuta je ostalo do dolaska busa na zadanu stanicu
+ * @param {string} stopName - Naziv stanice
+ * @param {string} lineId - ID linije
+ * @param {string} directionId - ID smjera
+ */
+// Popravljena funkcija u app.js
+function getMinutesUntilArrival(stopName, lineId, directionId) {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    const line = LINES.find(l => l.id === lineId);
+    if (!line) return null;
+    
+    const direction = line.directions.find(d => d.id === directionId);
+    if (!direction) return null;
+
+    // ODREĐIVANJE TIPA DANA (Workday/Saturday/Sunday)
+    const dayType = getDayType(now); 
+    const departures = direction.departures[dayType] || [];
+
+    let minDiff = Infinity;
+    let found = false;
+
+    departures.forEach(dep => {
+        const stopInfo = dep.stops.find(s => s.name === stopName);
+        if (stopInfo) {
+            const [h, m] = dep.time.split(':').map(Number);
+            const arrivalTime = (h * 60 + m) + stopInfo.offset;
+            
+            const diff = arrivalTime - currentMinutes;
+            // Gledamo samo buseve koji još nisu prošli (ili su tu unutar 2 min)
+            if (diff >= -2 && diff < minDiff) {
+                minDiff = diff;
+                found = true;
+            }
+        }
+    });
+
+    return found ? Math.round(minDiff) : null;
+}
+
 // =======================
 // INITIALIZATION
 // =======================
