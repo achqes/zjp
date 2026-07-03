@@ -1,8 +1,70 @@
+/* ========================
+   SCREEN HEADERS — po ekranu
+   ======================== */
+
+.screen-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 428px;
+  margin: 0 auto;
+  background: rgba(51, 51, 51, 1);
+  border-radius: 0 0 18px 18px;
+  z-index: 10;
+  padding: 54px 16px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.screen-header-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(228, 228, 228, 1);
+  text-align: center;
+}
+
+.screen-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.header-subtitle {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(228, 228, 228, 1);
+}
+
+.screen-header-expanded {
+  padding-bottom: 0;
+}
+
+/* Search bar unutar headera */
+.screen-header .search-container {
+  margin-top: 12px;
+  width: 100%;
+}
+
+/* Content padding — uzima u obzir sticky header */
+.with-header {
+  padding-top: 20px !important;
+}
+
+.with-expanded-header {
+  padding-top: 20px !important;
+}
+
+#screen-home .content {
+  padding-top: 120px !important;
+}
 * { 
   margin: 0; 
   padding: 0; 
   box-sizing: border-box; 
-  /* Isključuje plavi highlight na mobitelima kada se klikne */
   -webkit-tap-highlight-color: transparent; 
 }
 
@@ -14,31 +76,10 @@ html, body {
   height: 100%;
   max-width: 428px;
   margin: 0 auto;
-  /* ZAKLJUČAVA GLAVNI PROZOR - SPREČAVA CUTOFF I ODSKAKANJE CELOG SAJTA */
   overflow: hidden; 
 }
 
-/* DYNAMIC HEADER */
-.top-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: rgba(51, 51, 51, 1);
-  border-radius: 0 0 18px 18px;
-  z-index: 1000;
-  padding: 54px 7.5px 20px;
-  max-width: 428px;
-  margin: 0 auto;
-  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-}
-
-.top-bar.hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-10px);
-}
+/* top-bar replaced by screen-header */
 
 .top-nav {
   display: flex;
@@ -73,14 +114,12 @@ html, body {
   display: none;
 }
 
-/* SCREENS - iOS style transitions i Scroll popravka */
 .screen {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* SAMO SE EKRAN SCROLLA, ZATO NEMA CUTOFFA */
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -100,33 +139,29 @@ html, body {
   transition: transform 0.35s cubic-bezier(0.36, 0.66, 0.04, 1), opacity 0.3s ease;
 }
 
-/* CONTENT PADDING - Ovdje je ključ za prostor ispod zadnje linije */
 .content {
   max-width: 428px;
   margin: 0 auto;
-  /* Dodajemo env(safe-area-inset-bottom) za iOS navigaciju na dnu */
-  padding: 270px 7.5px calc(270px + env(safe-area-inset-bottom)) !important; 
+  padding: 20px 7.5px calc(96px + env(safe-area-inset-bottom)) !important; 
 }
 
 .content.with-header {
-  padding-top: 130px !important; /* Ovo je mjera da naslov stoji odmah ispod headera */
-  padding-bottom: 100px !important;
+  padding-top: 130px !important;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
 }
 
-/* Padding za ekran sa linijama - da naslov bude bliže listi */
 #screen-lines .content {
-  padding-top: 180px !important;
+  padding-top: 160px !important;
 }
 
 .page-title {
   font-size: 22px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 12px; /* Manji razmak između naslova i liste */
+  margin-bottom: 12px;
   padding: 0 4px;
 }
 
-/* FAVORITE BUTTON - IST STIL KAO BACK BUTTON */
 .favorite-btn {
   position: fixed;
   top: 16px;
@@ -149,21 +184,14 @@ html, body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.favorite-btn:active {
-  transform: scale(0.88);
-}
-
-.favorite-btn.active {
-  background: #007AFF;
-}
-
+.favorite-btn:active { transform: scale(0.88); }
+.favorite-btn.active { background: #ffc400; }
 .favorite-btn.hidden {
   opacity: 0;
   pointer-events: none;
   transform: scale(0.8);
 }
 
-/* SEARCH BAR */
 .search-container {
   position: relative;
   width: calc(100% - 15px);
@@ -173,9 +201,7 @@ html, body {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.search-container.hidden {
-  display: none;
-}
+.search-container.hidden { display: none; }
 
 .search-icon {
   position: absolute;
@@ -205,17 +231,14 @@ html, body {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.search-container input::placeholder {
-  color: rgba(150, 150, 150, 1);
-}
+.search-container input::placeholder { color: rgba(150, 150, 150, 1); }
 
 .search-container input:focus {
   outline: none;
-  border-color: #007AFF;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+  border-color: #ffc400;
+  box-shadow: 0 0 0 3px rgba(255, 208, 0, 0.1);
 }
 
-/* CALENDAR STRIP */
 .calendar-strip {
   display: flex;
   gap: 10px;
@@ -227,19 +250,14 @@ html, body {
   max-width: 428px;
 }
 
-.calendar-strip.hidden {
-  display: none;
-}
-
-.calendar-strip::-webkit-scrollbar {
-  display: none;
-}
+.calendar-strip.hidden { display: none; }
+.calendar-strip::-webkit-scrollbar { display: none; }
 
 .calendar-day {
   min-width: 54px;
   height: 68px;
   background: rgba(33, 33, 33, 1);
-  border: 1.5px solid #007AFF;
+  border: 1.5px solid #ffc400;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -249,13 +267,11 @@ html, body {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.calendar-day:active {
-  transform: scale(0.95);
-}
+.calendar-day:active { transform: scale(0.95); }
 
 .calendar-day.active {
-  background: #007AFF;
-  border-color: #007AFF;
+  background: #ffc400;
+  border-color: #ffc400;
   transform: scale(1.05);
 }
 
@@ -264,35 +280,28 @@ html, body {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 2px;
-  color: #007AFF;
+  color: #ffc400;
   transition: color 0.2s ease;
 }
 
-.calendar-day.active .calendar-day-number {
-  color: white;
-}
+.calendar-day.active .calendar-day-number { color: white; }
 
 .calendar-day-name {
   font-size: 12px;
   opacity: 0.8;
-  color: #007AFF;
+  color: #ffc400;
   transition: color 0.2s ease;
 }
 
-.calendar-day.active .calendar-day-name {
-  color: white;
-}
+.calendar-day.active .calendar-day-name { color: white; }
 
-/* DIRECTION TOGGLE */
 #directions-tabs-header {
   margin: 10px 7.5px 0;
   width: calc(100% - 15px);
   max-width: 413px;
 }
 
-#directions-tabs-header.hidden {
-  display: none;
-}
+#directions-tabs-header.hidden { display: none; }
 
 .direction-tab-header {
   display: flex;
@@ -314,7 +323,7 @@ html, body {
 .direction-icon-header {
   width: 30px;
   height: 30px;
-  background: #007AFF;
+  background: #ffc400;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -326,9 +335,7 @@ html, body {
   transition: transform 0.3s ease;
 }
 
-.direction-tab-header:active .direction-icon-header {
-  transform: rotate(180deg);
-}
+.direction-tab-header:active .direction-icon-header { transform: rotate(180deg); }
 
 .direction-text-header {
   flex: 1;
@@ -347,16 +354,13 @@ html, body {
 .to-text-header {
   font-size: 14px;
   font-weight: 600;
-  color: #007AFF;
+  color: #ffc400;
   font-family: 'Inter', sans-serif;
   transition: color 0.2s ease;
 }
 
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
-/* SCREENS - iOS style transitions */
 .screen {
   position: fixed;
   top: 0;
@@ -366,13 +370,10 @@ html, body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background: rgba(33, 33, 33, 1);
-
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
-
   transform: translateX(100%);
   transition: transform 0.35s cubic-bezier(0.36, 0.66, 0.04, 1);
-
   z-index: 1;
   visibility: hidden;
   opacity: 0;
@@ -386,71 +387,56 @@ html, body {
   transition: transform 0.35s cubic-bezier(0.36, 0.66, 0.04, 1), opacity 0.3s ease;
 }
 
-/* CONTENT PADDING */
-/* Padding za sve ekrane osim onih koji trebaju specifičan */
-.screen .content {
-  padding: 130px 16px 120px 16px;
-}
+.screen .content { padding: 130px 16px 120px 16px; }
 
-/* Specifičan padding SAMO za detalje linije */
 #screen-line-detail .content {
   padding-top: 280px !important; 
-  padding-bottom: 100px !important;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
 }
 
+.screen { scrollbar-width: none; -ms-overflow-style: none; }
+.screen::-webkit-scrollbar { display: none; }
 
-/* Sakrivanje scrollbara za SVE ekrane */
-.screen {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.screen::-webkit-scrollbar {
-  display: none;
-}
+#screen-home .content { padding-top: 120px !important; }
 
-/* Samo za početni ekran - spuštamo tabove niže */
-#screen-home .content {
-  padding-top: 120px !important; 
-}
-
-/* Osiguravamo da tabovi ostanu centrirani i vidljivi */
 .home-tabs {
   margin-top: 10px !important;
   z-index: 50;
 }
 
-/* TRIP HEADER */
+/* ========================
+   TRIP HEADER — ZET INFO STIL
+   ======================== */
+
 .trip-header {
   position: fixed;
-  top: -4px;
+  top: 0;
   left: 0;
   right: 0;
-  background: rgba(51, 51, 51, 1);
-  border-radius: 0 0 18px 18px;
-  padding: 64px 20px 12px;
   max-width: 428px;
   margin: 0 auto;
-  z-index: 50;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  background: rgba(44, 44, 46, 1);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 52px 16px 14px;
 }
 
 .trip-header-top {
-  font-family: 'Inter', sans-serif;
-  font-size: 20px;
+  font-size: 12px;
   font-weight: 500;
+  color: rgba(150,150,160,1);
   text-align: center;
-  color: rgba(228, 228, 228, 1);
-  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
 }
 
 .trip-header-line {
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   text-align: center;
-  color: rgba(228, 228, 228, 1);
-  margin-bottom: 6px;
+  color: rgba(228,228,228,1);
+  margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -458,18 +444,21 @@ html, body {
 }
 
 .trip-header-date {
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
   text-align: center;
-  color: rgba(150, 150, 150, 1);
+  color: rgba(150,150,160,1);
 }
 
 .trip-content {
-  padding-top: 180px !important;
+  padding-top: 145px !important;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
 }
 
-/* BACK BUTTON - iOS style */
+/* ========================
+   BACK BUTTON
+   ======================== */
+
 .back-btn {
   position: fixed;
   top: 16px;
@@ -492,17 +481,13 @@ html, body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.back-btn:active {
-  transform: scale(0.88);
-}
-
+.back-btn:active { transform: scale(0.88); }
 .back-btn.hidden {
   opacity: 0;
   pointer-events: none;
   transform: scale(0.8);
 }
 
-/* SECTION TITLE */
 h3.section-title {
   font-family: 'Inter', sans-serif;
   font-weight: 500;
@@ -513,7 +498,6 @@ h3.section-title {
   margin-bottom: 9px;
 }
 
-/* LINE ITEM - iOS bounce */
 .line-item {
   display: flex;
   align-items: center;
@@ -552,9 +536,7 @@ h3.section-title {
   transition: transform 0.2s ease;
 }
 
-.line-item:active .line-number {
-  transform: scale(0.9);
-}
+.line-item:active .line-number { transform: scale(0.9); }
 
 .line-item span {
   font-family: 'Inter', sans-serif;
@@ -565,7 +547,6 @@ h3.section-title {
   color: rgba(228, 228, 228, 1);
 }
 
-/* DEPARTURE TIME CARD */
 .departure-card {
   background: rgba(51, 51, 51, 1);
   border-radius: 8px;
@@ -606,160 +587,134 @@ h3.section-title {
   transition: color 0.2s ease;
 }
 
-.departure-card.past {
-  opacity: 0.5;
-}
-
+.departure-card.past { opacity: 0.5; }
 .departure-card.past .departure-time-start,
-.departure-card.past .departure-time-end {
-  color: #8E8E93;
-}
-
-.departure-card.past .departure-separator::before {
-  content: "—";
-}
-
+.departure-card.past .departure-time-end { color: #8E8E93; }
+.departure-card.past .departure-separator::before { content: "—"; }
 .departure-card.active .departure-time-start,
-.departure-card.active .departure-time-end {
-  color: white;
-}
+.departure-card.active .departure-time-end { color: white; }
+.departure-card.active .departure-separator::before { content: "⋯"; }
+.departure-card.future .departure-separator::before { content: "→"; }
 
-.departure-card.active .departure-separator::before {
-  content: "⋯";
-}
+/* ========================
+   STOP ROWS — ZET INFO STIL
+   ======================== */
 
-.departure-card.future .departure-separator::before {
-  content: "→";
-}
-
-/* ================================================
-   TRIP SCREEN — ZET-INSPIRED VERTICAL TIMELINE
-   ================================================ */
-
-#stops-list {
-  padding: 8px 0 0;
-}
+#stops-list { padding: 8px 0 0; }
 
 .stop-row {
   display: flex;
   align-items: stretch;
   position: relative;
-  min-height: 68px;
-  transition: opacity 0.3s ease;
+  min-height: 64px;
 }
 
-/* Vertical track column */
 .stop-icon {
+  width: 52px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 48px;
-  flex-shrink: 0;
   position: relative;
-  z-index: 1;
 }
 
-/* The dot node */
-.stop-icon::before {
-  content: '';
-  display: block;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: rgba(70, 70, 75, 1);
-  border: 3px solid rgba(100, 100, 110, 0.6);
-  margin-top: 27px;
-  flex-shrink: 0;
-  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-  position: relative;
-  z-index: 2;
-}
-
-/* Vertical line connecting dots */
+/* Vertikalna žuta linija */
 .stop-icon::after {
   content: '';
-  display: block;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  bottom: 0;
   width: 3px;
-  background: rgba(80, 80, 88, 0.5);
-  flex: 1;
-  margin-top: 2px;
+  background: #ffc400;
   border-radius: 2px;
-  transition: background 0.25s ease;
+  z-index: 0;
 }
 
-/* Hide line after last stop */
-.stop-row:last-child .stop-icon::after {
-  display: none;
+.stop-row:last-child .stop-icon::after { bottom: 50%; }
+.stop-row:first-child .stop-icon::after { top: 50%; }
+
+/* Dot */
+.stop-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #ffc400;
+  border: 3px solid #ffc400;
+  z-index: 2;
+  transition: all 0.2s;
 }
 
-/* ---- Passed stops ---- */
+/* Passed */
 .stop-row.passed .stop-icon::before {
-  background: #007AFF;
-  border-color: #007AFF;
+  background: #ffc400;
+  border-color: #ffc400;
+  opacity: 0.4;
   width: 10px;
   height: 10px;
-  margin-top: 29px;
 }
-.stop-row.passed .stop-icon::after {
-  background: #007AFF;
-}
+.stop-row.passed .stop-icon::after { opacity: 0.4; }
 
-/* ---- Active (bus is here now) ---- */
+/* Active — bus je tu, dot se skriva jer ga pokriva ikona */
 .stop-row.active .stop-icon::before {
-  width: 18px;
-  height: 18px;
-  margin-top: 25px;
-  background: #007AFF;
-  border-color: rgba(0, 122, 255, 0.3);
-  border-width: 4px;
-  box-shadow: 0 0 0 6px rgba(0, 122, 255, 0.15);
-  animation: stopPulse 2s ease-in-out infinite;
-}
-.stop-row.active .stop-icon::after {
-  background: linear-gradient(to bottom, #007AFF 0%, rgba(80, 80, 88, 0.4) 100%);
+  width: 0;
+  height: 0;
+  border: none;
+  background: transparent;
 }
 
-@keyframes stopPulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.2); }
-  50% { box-shadow: 0 0 0 9px rgba(0, 122, 255, 0.08); }
+/* Future */
+.stop-row.future .stop-icon::before {
+  background: #2a2a2e;
+  border-color: rgba(255,196,0,0.3);
+  width: 12px;
+  height: 12px;
 }
+.stop-row.future .stop-icon::after { background: rgba(255,196,0,0.3); }
 
-/* ---- First stop gets bigger terminal dot ---- */
-.stop-row:first-child .stop-icon::before {
-  width: 16px;
-  height: 16px;
-  margin-top: 26px;
-  border-color: #007AFF;
-  background: rgba(0, 122, 255, 0.15);
-}
-
-/* ---- Last stop terminal dot ---- */
+/* Terminal stanice */
+.stop-row:first-child .stop-icon::before,
 .stop-row:last-child .stop-icon::before {
   width: 16px;
   height: 16px;
-  margin-top: 26px;
-  border-color: rgba(100, 100, 110, 0.8);
-  background: rgba(70, 70, 75, 1);
+  background: #ffc400;
+  border-color: #ffc400;
+  opacity: 1;
 }
 
-/* ---- Bus icon overlaid on active dot (handled via SVG in HTML) ---- */
+/* Bus ikona na aktivnoj stanici */
 .stop-icon-bus {
   position: absolute;
-  top: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   z-index: 3;
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
+  background: #ffc400;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 0 4px rgba(255, 196, 0, 0.2);
+  animation: busPulse 2s ease-in-out infinite;
 }
+
 .stop-icon-bus svg {
-  width: 14px;
-  height: 14px;
-  fill: white;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+  width: 16px;
+  height: 16px;
+  fill: rgba(33, 33, 33, 1);
+}
+
+@keyframes busPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(255, 196, 0, 0.2); }
+  50%       { box-shadow: 0 0 0 9px rgba(255, 196, 0, 0.08); }
 }
 
 /* Content area */
@@ -768,15 +723,12 @@ h3.section-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px 10px 4px;
-  min-height: 68px;
-  border-bottom: 1px solid rgba(60, 60, 65, 0.5);
-  transition: background 0.2s ease;
+  padding: 0 16px 0 4px;
+  min-height: 64px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-.stop-row:last-child .stop-content {
-  border-bottom: none;
-}
+.stop-row:last-child .stop-content { border-bottom: none; }
 
 .stop-name {
   font-family: 'Inter', sans-serif;
@@ -800,44 +752,52 @@ h3.section-title {
   transition: color 0.2s ease;
 }
 
-/* Passed stops — dimmed */
+/* Passed — dimovano */
 .stop-row.passed .stop-name,
 .stop-row.passed .stop-time,
 .gray .stop-name,
 .gray .stop-time {
-  color: rgba(100, 100, 110, 1) !important;
+  color: rgba(90, 90, 100, 1) !important;
 }
 
-/* Active stop — highlighted */
+/* Active stop */
 .stop-row.active .stop-content {
-  background: rgba(0, 122, 255, 0.06);
-  border-radius: 8px;
-  border-bottom: none;
+  background: rgba(255, 196, 0, 0.07);
 }
-
 .stop-row.active .stop-name {
-  color: rgba(228, 228, 228, 1);
-  font-weight: 600;
+  color: #fff;
+  font-weight: 700;
 }
-
 .stop-row.active .stop-time {
-  color: #007AFF;
+  color: #ffc400;
   font-weight: 700;
 }
 
-/* Countdown large number */
+/* Terminal rows */
+.stop-row:first-child .stop-name,
+.stop-row:last-child .stop-name {
+  font-weight: 700;
+  color: #fff;
+}
+.stop-row:first-child .stop-time,
+.stop-row:last-child .stop-time {
+  color: #ffc400;
+  font-weight: 700;
+}
+
+/* Countdown */
 .time-number {
   font-family: 'Roboto Mono', monospace;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
-  color: #007AFF;
+  color: #ffc400;
   line-height: 1;
   animation: countdownPulse 2s ease-in-out infinite;
 }
 
 @keyframes countdownPulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.65; }
 }
 
 .time-unit {
@@ -846,6 +806,11 @@ h3.section-title {
   font-weight: 500;
   color: rgba(120, 120, 130, 1);
   margin-left: 2px;
+}
+
+@keyframes stopPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(255, 208, 0, 0.15); }
+  50% { box-shadow: 0 0 0 9px rgba(255, 208, 0, 0.08); }
 }
 
 @keyframes iconPulse {
@@ -858,17 +823,16 @@ h3.section-title {
 #lines-list {
   display: flex;
   flex-direction: column;
-  gap: 2px; /* Razmak između linija */
+  gap: 2px;
 }
 
 .line-item {
   background: rgba(45, 45, 45, 1);
   padding: 16px;
-  border-radius: 12px; /* Zaobljene ivice za moderan izgled */
+  border-radius: 12px;
   transition: transform 0.2s ease;
 }
 
-/* HOME SCREEN TABS */
 .home-tabs {
   display: flex;
   gap: 8px;
@@ -889,14 +853,12 @@ h3.section-title {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.home-tab:active {
-  transform: scale(0.96);
-}
+.home-tab:active { transform: scale(0.96); }
 
 .home-tab.active {
-  background: rgba(0, 122, 255, 0.15);
-  border-color: #007AFF;
-  color: #007AFF;
+  background: rgba(255, 208, 0, 0.15);
+  border-color: #ffc400;
+  color: #ffc400;
   transform: scale(1.02);
 }
 
@@ -915,17 +877,10 @@ h3.section-title {
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* LINE ITEM SA FAVORITE BUTTON */
 .line-item-home {
   display: flex;
   align-items: center;
@@ -945,9 +900,7 @@ h3.section-title {
   background: rgba(61, 61, 61, 1);
 }
 
-.line-item-home .line-number {
-  margin-right: 12px;
-}
+.line-item-home .line-number { margin-right: 12px; }
 
 .line-item-home .line-info {
   flex: 1;
@@ -970,7 +923,6 @@ h3.section-title {
   color: rgba(150, 150, 150, 1);
 }
 
-/* EMPTY STATE */
 .empty-favorites {
   text-align: center;
   padding: 60px 20px;
@@ -1011,10 +963,10 @@ h3.section-title {
   color: rgba(150, 150, 150, 1);
 }
 
-/* BOTTOM NAVIGATION - iOS style */
 .bottom-nav {
   display: flex;
   justify-content: space-around;
+  align-items: stretch;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -1022,43 +974,41 @@ h3.section-title {
   width: 100%;
   max-width: 428px;
   margin: 0 auto;
-  background: rgba(40, 40, 40, 0.95);
-  padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+  background: rgba(30, 30, 30, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
   border-top: 1px solid rgba(60, 60, 60, 1);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
   z-index: 1000;
 }
 
 .nav-item {
-  flex: 1; /* Svaka ikonica zauzima jednako prostora */
+  flex: 1;
   text-align: center;
   font-size: 11px;
-}
-
-.nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 3px;
   cursor: pointer;
-  padding: 8px 20px;
+  padding: 6px 4px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   color: rgba(150, 150, 150, 1);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.nav-item:active {
-  transform: scale(0.96); /* Bilo je 0.9, što je preveliko smanjenje */
-}
+.nav-item:active { transform: scale(0.96); }
 
 .line-item:active, 
 .line-item-home:active, 
 .departure-card:active {
-  transform: scale(0.98); /* Suptilniji klik */
+  transform: scale(0.98);
   background: rgba(61, 61, 61, 1);
 }
 
-.nav-item.active {
-  color: #007AFF;
-}
+.nav-item.active { color: #ffc400; }
 
 .nav-item.active svg {
   animation: iconPop 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -1083,35 +1033,20 @@ h3.section-title {
   font-weight: 500;
 }
 
-/* ADJUST CONTENT FOR BOTTOM NAV */
-.content {
-  padding: 20px 16px 120px 16px; 
-}
 
-.trip-content {
-  padding-bottom: 100px !important;
-}
-
-/* NOTIFICATIONS */
 .notification-card {
   background: rgba(51, 51, 51, 1);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
-  border-left: 3px solid #007AFF;
+  border-left: 3px solid #ffc400;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
   animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .notification-card:active {
@@ -1126,14 +1061,10 @@ h3.section-title {
   margin-bottom: 8px;
 }
 
-.notification-icon {
-  width: 24px;
-  height: 24px;
-  fill: #007AFF;
-}
+.notification-icon { width: 24px; height: 24px; fill: #ffc400; }
 
 .notification-badge {
-  background: #007AFF;
+  background: #ffc400;
   color: white;
   padding: 2px 8px;
   border-radius: 10px;
@@ -1195,9 +1126,7 @@ h3.section-title {
   transition: all 0.2s ease;
 }
 
-.notification-card:hover .notification-badge {
-  transform: scale(1.05);
-}
+.notification-card:hover .notification-badge { transform: scale(1.05); }
 
 .notification-icon-svg {
   width: 20px;
@@ -1209,18 +1138,13 @@ h3.section-title {
   justify-content: center;
 }
 
-#screen-map {
-  padding: 0; /* Mapa ide preko cijelog ekrana */
-  overflow: hidden;
-}
-#map-container {
-  height: 100vh;
-}
+#screen-map { padding: 0; overflow: hidden; }
+#map-container { height: 100vh; }
 
 .notification-icon-svg svg {
   width: 20px;
   height: 20px;
-  filter: brightness(0) invert(1); /* Bijela boja */
+  filter: brightness(0) invert(1);
   transition: all 0.2s ease;
 }
 
@@ -1229,10 +1153,7 @@ h3.section-title {
   filter: brightness(0) invert(1) drop-shadow(0 1px 3px rgba(255,255,255,0.3));
 }
 
-/* =======================
-   STOP SHEET (bottom drawer)
-   ======================= */
-
+/* STOP SHEET */
 .stop-sheet-backdrop {
   position: fixed;
   inset: 0;
@@ -1265,9 +1186,7 @@ h3.section-title {
   box-shadow: 0 -4px 30px rgba(0,0,0,0.5);
 }
 
-.stop-sheet.open {
-  transform: translateY(0);
-}
+.stop-sheet.open { transform: translateY(0); }
 
 .stop-sheet-handle {
   width: 36px;
@@ -1291,10 +1210,7 @@ h3.section-title {
   margin-bottom: 12px;
 }
 
-.stop-sheet-icon {
-  font-size: 22px;
-  flex-shrink: 0;
-}
+.stop-sheet-icon { font-size: 22px; flex-shrink: 0; }
 
 .stop-sheet-name {
   font-family: 'Inter', sans-serif;
@@ -1320,33 +1236,6 @@ h3.section-title {
   transition: background 0.15s ease;
 }
 .stop-sheet-close:active { background: rgba(80,80,82,1); }
-
-.stop-sheet-directions-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 11px 16px;
-  background: #007AFF;
-  border-radius: 10px;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
-.stop-sheet-directions-btn:active {
-  background: #0062cc;
-  transform: scale(0.98);
-}
-.stop-sheet-directions-btn svg {
-  width: 18px;
-  height: 18px;
-  fill: #fff;
-  flex-shrink: 0;
-}
 
 .stop-sheet-section-title {
   font-family: 'Inter', sans-serif;
@@ -1406,10 +1295,7 @@ h3.section-title {
   flex-shrink: 0;
 }
 
-.stop-arrival-info {
-  flex: 1;
-  min-width: 0;
-}
+.stop-arrival-info { flex: 1; min-width: 0; }
 
 .stop-arrival-direction {
   font-family: 'Inter', sans-serif;
@@ -1432,18 +1318,7 @@ h3.section-title {
   text-overflow: ellipsis;
 }
 
-.stop-arrival-clock {
-  font-family: 'Roboto Mono', monospace;
-  font-size: 13px;
-  font-weight: 400;
-  color: rgba(150,150,150,1);
-  margin-top: 2px;
-}
-
-.stop-arrival-countdown {
-  flex-shrink: 0;
-  text-align: right;
-}
+.stop-arrival-countdown { flex-shrink: 0; text-align: right; }
 
 .stop-arrival-now {
   font-family: 'Inter', sans-serif;
@@ -1469,7 +1344,6 @@ h3.section-title {
   color: rgba(228,228,228,0.9);
 }
 
-/* Leaflet stop label */
 .stop-label {
   background: rgba(44,44,46,0.92) !important;
   border: 1px solid rgba(80,80,80,0.6) !important;
@@ -1484,7 +1358,6 @@ h3.section-title {
 }
 .stop-label::before { display: none !important; }
 
-/* Leaflet zoom control prilagodba */
 .leaflet-control-zoom {
   border: none !important;
   margin-bottom: 80px !important;
@@ -1496,6 +1369,4 @@ h3.section-title {
   border: 1px solid rgba(80,80,80,0.5) !important;
   font-size: 18px !important;
 }
-.leaflet-control-zoom a:hover {
-  background: rgba(60,60,62,1) !important;
-}
+.leaflet-control-zoom a:hover { background: rgba(60,60,62,1) !important; }

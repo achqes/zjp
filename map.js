@@ -188,7 +188,7 @@ function drawRouteWithAnimation(lineId, directionId) {
 
       coordsArray.push({ latLng: [coords.lat, coords.lng], isPassed });
 
-      const markerColor = isPassed ? '#666666' : '#007AFF';
+      const markerColor = isPassed ? '#666666' : '#e6bc36';
 
       const marker = L.circleMarker([coords.lat, coords.lng], {
         radius: 7,

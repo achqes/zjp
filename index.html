@@ -6,7 +6,7 @@
   <title>zePrevoz</title>
   
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=Tvoj-GA-ID-Ovdje"></script>
   <script>
@@ -23,29 +23,15 @@
 </head>
 <body>
 
-  <div class="top-bar" id="main-header">
-    <div class="top-nav">
-      <span id="header-title">Početna</span>
-      <span id="header-subtitle" class="hidden"></span>
-      <button id="favorite-btn" class="favorite-btn hidden" onclick="toggleLineFavorite()">☆</button>
-    </div>
-
-    <div class="search-container hidden" id="search-bar">
-      <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="11" cy="11" r="7" fill="none" stroke="rgb(150,150,150)" stroke-width="2"/>
-        <line x1="16" y1="16" x2="21" y2="21" stroke="rgb(150,150,150)" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <input type="text" id="search-input" placeholder="Pronađi liniju..." />
-    </div>
-
-    <div class="calendar-strip hidden" id="calendar-strip"></div>
-    <div id="directions-tabs-header" class="hidden"></div>
-  </div>
-
   <button class="back-btn hidden" id="back-to-home">←</button>
   <button class="back-btn hidden" id="back-to-line-detail">←</button>
+  <button id="favorite-btn" class="favorite-btn hidden" onclick="toggleLineFavorite()">☆</button>
 
+  <!-- POČETNA -->
   <div id="screen-home" class="screen active">
+    <div class="screen-header">
+      <div class="screen-header-title">Početna</div>
+    </div>
     <div class="content">
       <div class="home-tabs">
         <div class="home-tab active" data-tab="notifications">Obavijesti</div>
@@ -60,19 +46,43 @@
     </div>
   </div>
 
+  <!-- LINIJE -->
   <div class="screen" id="screen-lines">
+    <div class="screen-header">
+      <div class="screen-header-title">Linije</div>
+      <div class="search-container" id="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="7" fill="none" stroke="rgb(150,150,150)" stroke-width="2"/>
+          <line x1="16" y1="16" x2="21" y2="21" stroke="rgb(150,150,150)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Pronađi liniju..." />
+      </div>
+    </div>
     <div class="content with-header">
       <div id="lines-list"></div>
     </div>
   </div>
 
+  <!-- DETALJI LINIJE -->
   <div class="screen" id="screen-line-detail">
+    <div class="screen-header screen-header-expanded" id="line-detail-header">
+      <div class="screen-header-row">
+        <div class="screen-header-title" id="header-title">Polasci</div>
+        <span id="header-subtitle" class="header-subtitle hidden"></span>
+      </div>
+      <div class="calendar-strip" id="calendar-strip"></div>
+      <div id="directions-tabs-header"></div>
+    </div>
     <div class="content with-expanded-header">
       <div id="departures-list"></div>
     </div>
   </div>
 
+  <!-- INFO -->
   <div class="screen" id="screen-info">
+    <div class="screen-header">
+      <div class="screen-header-title">Informacije</div>
+    </div>
     <div class="content with-header">
       <h3 class="section-title" style="margin-top: 10px;">O PLATFORMI</h3>
       
@@ -94,9 +104,10 @@
     </div>
   </div>
 
+  <!-- TRIP — nema header, ima svoj trip-header -->
   <div class="screen" id="screen-trip">
     <div class="trip-header" id="trip-header-container">
-      <div class="trip-header-top">Detalji polaska</div>
+      <div class="trip-header-top" id="trip-header-top"></div>
       <div class="trip-header-line" id="trip-header-line"></div>
       <div class="trip-header-date" id="trip-date">Danas</div>
     </div>
@@ -105,11 +116,12 @@
     </div>
   </div>
 
+  <!-- MAPA -->
   <div id="screen-map" class="screen">
     <div id="map-container" style="width: 100%; height: 100%;"></div>
   </div>
 
-<!-- STOP SHEET - bottom drawer for stop arrivals -->
+<!-- STOP SHEET -->
 <div class="stop-sheet-backdrop" id="stop-sheet-backdrop" onclick="closeStopSheet()"></div>
 <div class="stop-sheet" id="stop-sheet">
   <div class="stop-sheet-handle"></div>
@@ -145,7 +157,7 @@
 
 <script src="physical_stops.js"></script>
 <script src="data.js"></script>
-<script src="obavijesti.js"></script>              <!-- ✅ DODANO! -->
+<script src="obavijesti.js"></script>
 <script src="stop_direction_map.js"></script>
 <script src="map.js"></script>
 <script src="app.js"></script>

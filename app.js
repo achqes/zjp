@@ -187,101 +187,17 @@ function showScreen(id) {
 
   const bHome = document.getElementById('back-to-home');
   const bTrip = document.getElementById('back-to-line-detail');
-  const tripHeader = document.getElementById('trip-header-container');
-  const mainHeader = document.getElementById('main-header');
+  const favBtn = document.getElementById('favorite-btn');
 
-  // Resetiramo status back dugmadi
   if (bHome) bHome.classList.add('hidden');
   if (bTrip) bTrip.classList.add('hidden');
-  
-  if (tripHeader) tripHeader.style.display = 'none';
-
-  if (id === 'screen-map') {
-    mainHeader.classList.add('hidden');
-  } else {
-    mainHeader.classList.remove('hidden');
-  }
-
-  // OVO JE BIO PROBLEM:
-  // Prije si imao naredbe `bottomNav.style.display = 'none'`
-  // Sada ih više nema, navigacija će ostati vidljiva svugdje!
+  if (favBtn) favBtn.classList.add('hidden');
 
   if (id === 'screen-line-detail') {
     if (bHome) bHome.classList.remove('hidden');
+    if (favBtn) { favBtn.classList.remove('hidden'); updateFavoriteButton(); }
   } else if (id === 'screen-trip') {
     if (bTrip) bTrip.classList.remove('hidden');
-    if (tripHeader) tripHeader.style.display = 'block';
-    mainHeader.classList.add('hidden');
-  }
-
-  updateHeader(id);
-}
-
-// =======================
-// UPDATE HEADER
-// =======================
-function updateHeader(screen) {
-  const headerTitle = document.getElementById('header-title');
-  const headerSubtitle = document.getElementById('header-subtitle');
-  const searchBar = document.getElementById('search-bar');
-  const calendarStrip = document.getElementById('calendar-strip');
-  const directionsHeader = document.getElementById('directions-tabs-header');
-  const favoriteBtn = document.getElementById('favorite-btn');
-
-  if (screen === 'screen-map') {
-    headerTitle.classList.add('hidden');
-    headerSubtitle.classList.add('hidden');
-    searchBar.classList.add('hidden');
-    calendarStrip.classList.add('hidden');
-    directionsHeader.classList.add('hidden');
-    favoriteBtn.classList.add('hidden');
-    document.getElementById('main-header').classList.add('hidden');
-    return;
-  } else {
-    document.getElementById('main-header').classList.remove('hidden');
-  }
-
-  if (screen === 'screen-home') {
-    headerTitle.textContent = 'Početna';
-    headerTitle.classList.remove('hidden');
-    headerSubtitle.classList.add('hidden');
-    searchBar.classList.add('hidden');
-    calendarStrip.classList.add('hidden');
-    directionsHeader.classList.add('hidden');
-    favoriteBtn.classList.add('hidden');
-  } else if (screen === 'screen-lines') {
-    headerTitle.textContent = 'Raspored';
-    headerTitle.classList.remove('hidden');
-    headerSubtitle.classList.add('hidden');
-    searchBar.classList.remove('hidden');
-    calendarStrip.classList.add('hidden');
-    directionsHeader.classList.add('hidden');
-    favoriteBtn.classList.add('hidden');
-  } else if (screen === 'screen-info') {
-    headerTitle.textContent = 'Informacije'; // NASLOV ZA INFO EKRAN
-    headerTitle.classList.remove('hidden');
-    headerSubtitle.classList.add('hidden');
-    searchBar.classList.add('hidden');
-    calendarStrip.classList.add('hidden');
-    directionsHeader.classList.add('hidden');
-    favoriteBtn.classList.add('hidden');
-  } else if (screen === 'screen-line-detail') {
-    headerTitle.textContent = 'Polasci';
-    headerTitle.classList.remove('hidden');
-    headerSubtitle.textContent = currentLine.number;
-    headerSubtitle.classList.remove('hidden');
-    searchBar.classList.add('hidden');
-    calendarStrip.classList.remove('hidden');
-    directionsHeader.classList.remove('hidden');
-    favoriteBtn.classList.remove('hidden');
-    updateFavoriteButton();
-  } else if (screen === 'screen-trip') {
-    headerTitle.classList.add('hidden');
-    headerSubtitle.classList.add('hidden');
-    searchBar.classList.add('hidden');
-    calendarStrip.classList.add('hidden');
-    directionsHeader.classList.add('hidden');
-    favoriteBtn.classList.add('hidden');
   }
 }
 
@@ -319,7 +235,7 @@ window.toggleLineFavorite = toggleLineFavorite;
 function renderCalendar() {
   const container = document.getElementById("calendar-strip");
   container.innerHTML = '';
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const days = ['Ned', 'Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub'];
 
   for (let i = 0; i < 7; i++) {
     const date = new Date();
@@ -413,9 +329,9 @@ function renderDirectionTabsHeader() {
   tab.innerHTML = `
     <div class="direction-icon-header">↕</div>
     <div class="direction-text-header">
-      <span class="from-text-header">From ${dir.from}</span>
+      <span class="from-text-header">iz ${dir.from}</span>
       <span>→</span>
-      <span class="to-text-header">To ${dir.to}</span>
+      <span class="to-text-header">za ${dir.to}</span>
     </div>
   `;
 
@@ -614,7 +530,9 @@ function renderDepartures() {
 function openTrip(departure) {
   localStorage.setItem('currentDepartureTime', departure.time);
 
-  document.getElementById('trip-header-line').textContent = `${currentLine.number} - ${currentLine.name}`;
+  const tripHeaderTop = document.getElementById('trip-header-top');
+  if (tripHeaderTop) tripHeaderTop.innerHTML = `<span style="display:inline-block;background:#ffc400;color:#1a1a1a;font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;">${currentLine.number}</span>`;
+  document.getElementById('trip-header-line').textContent = currentLine.name;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -622,12 +540,12 @@ function openTrip(departure) {
   tripDate.setHours(0, 0, 0, 0);
   const diffDays = Math.floor((tripDate - today) / (1000 * 60 * 60 * 24));
 
-  let dateText = 'Today';
+  let dateText = 'Danas';
   if (diffDays === 1) {
-    dateText = 'Tomorrow';
+    dateText = 'Sutra';
   } else if (diffDays > 1) {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const days = ['Ned', 'Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
     dateText = `${days[tripDate.getDay()]}, ${tripDate.getDate()} ${months[tripDate.getMonth()]}`;
   }
 
