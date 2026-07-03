@@ -390,7 +390,7 @@ html, body {
 .screen .content { padding: 130px 16px 120px 16px; }
 
 #screen-line-detail .content {
-  padding-top: 280px !important; 
+  padding-top: 240px !important; 
   padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
 }
 
@@ -628,7 +628,7 @@ h3.section-title {
   bottom: 0;
   width: 3px;
   background: #ffc400;
-  border-radius: 2px;
+  border-radius: 1px;
   z-index: 0;
 }
 
@@ -698,7 +698,7 @@ h3.section-title {
   width: 30px;
   height: 30px;
   background: #ffc400;
-  border-radius: 50%;
+  border-radius: 15%;
   display: flex;
   align-items: center;
   justify-content: center;
