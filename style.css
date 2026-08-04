@@ -92,6 +92,7 @@ html, body {
   opacity: 0;
 }
 
+
 .screen.active {
   transform: translateX(0);
   z-index: 10;
