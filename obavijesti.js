@@ -26,6 +26,17 @@ const OBAVIJESTI = [
     showTitle: true,
     showTime: true,
     showLine: true
+  },
+    {
+    id: 3,
+    title: "Dodaj zePrijevoz na tvoj zaslon!",
+    content: "Tvoje iskustvo može postati još bolje! Dodaj zePrijevoz na početni zaslon tvog uređaja i imat ćeš brzi pristup svim informacijama o linijama i stanicama. <br><br>Na Androidu: <strong>Dodaj na početni zaslon</strong> iz izbornika preglednika (to su tri točkice u gornjem desnom kutu).<br>Na iOS-u: Pritisni <strong>tri točkice</strong> u donjem desnom kutu, pritisni <strong>Podijeli</strong>, skrolaj dole i stisni <strong>Dodaj na početni zaslon</strong>.",
+    timestamp: "2026-02-25T12:00:00Z",
+    expiresInDays: 1000, // Notifikacija nestaje nakon 1000 dana
+    lineColor: "#8b1616",
+    showTitle: true,
+    showTime: true,
+    showLine: true
   }
 ];
 
