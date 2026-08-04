@@ -23,19 +23,39 @@ function isSchoolDay(date) {
   return true;
 }
 
+// Universal haptic feedback for Android & iOS
+function triggerHaptic(duration = 40) {
+  // 1. Android / Chrome / Supported Browsers
+  if ("vibrate" in navigator) {
+    navigator.vibrate(duration);
+  }
+  
+  // 2. iOS Safari Fallback
+  const iosTrigger = document.getElementById("ios-haptic-trigger");
+  if (iosTrigger) {
+    iosTrigger.click(); // Triggers iOS native switch haptic
+  }
+}
+
 // =============================
 // HOME SCREEN FUNKCIONALNOST
 // =============================
 
 function initHomeScreen() {
-  document.querySelectorAll('.home-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetTab = tab.dataset.tab;
+  const indicator = document.getElementById('home-segment-indicator');
 
-      document.querySelectorAll('.home-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.home-segment-btn').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.dataset.tab;
+
+      document.querySelectorAll('.home-segment-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.home-tab-content').forEach(c => c.classList.remove('active'));
 
-      tab.classList.add('active');
+      btn.classList.add('active');
+      if (indicator) {
+        indicator.classList.toggle('position-1', i === 1);
+      }
+
       const contentId = targetTab === 'favorites' ? 'home-tab-favorites' : 'home-tab-notifications';
       document.getElementById(contentId).classList.add('active');
     });
@@ -61,9 +81,8 @@ function renderFavorites() {
           <path d="M100 60 L120 90 L150 95 L125 118 L132 150 L100 133 L68 150 L75 118 L50 95 L80 90 Z" 
                 fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
         </svg>
-        <h3>Izgleda da još nemaš spremljenu niti jednu omiljenu liniju...</h3>
-        <p style="margin-top: 8px;">Živi na rubu vozeči se nasumičnim linijama dok ne saznaš koja je za tebe!</p>
-        <p style="margin-top: 12px; font-weight: 600;">Spremi liniju da ti bude lakše.</p>
+        <h3>Još uvijek nemaš spremljenu <br>svoju omiljenu liniju?</h3>
+        <p style="margin-top: 8px;">Omiljena je velika riječ, ali ozbiljno, ne propusti bus.</p>
       </div>
     `;
   } else {
@@ -100,16 +119,17 @@ const container = document.getElementById('notifications-list');
         ? formatNotificationTime(notif.timestamp) 
         : notif.time;
 
+      const showTitle = notif.showTitle !== false;
+      const showTime = notif.showTime !== false;
+      const showLine = notif.showLine !== false;
+      const lineColor = showLine ? (notif.lineColor || '#007AFF') : 'transparent';
+
       return `
-        <div class="notification-card">
+        <div class="notification-card" style="border-left-color: ${lineColor}">
           <div class="notification-header">
-            <span class="notification-icon-custom">${notif.icon}</span>
-            <span class="notification-badge" style="background-color: ${notif.badgeColor}">
-              ${notif.badge}
-            </span>
-            <span class="notification-time">${timeDisplay}</span>
+            ${showTitle ? `<span class="notification-title">${notif.title}</span>` : ''}
+            ${showTime ? `<span class="notification-time">${timeDisplay}</span>` : ''}
           </div>
-          <div class="notification-title">${notif.title}</div>
           <div class="notification-content">${notif.content.replace(/\n/g, '<br>')}</div>
         </div>
       `;
@@ -187,17 +207,88 @@ function showScreen(id) {
 
   const bHome = document.getElementById('back-to-home');
   const bTrip = document.getElementById('back-to-line-detail');
-  const favBtn = document.getElementById('favorite-btn');
+  const tripHeader = document.getElementById('trip-header-container');
+  const mainHeader = document.getElementById('main-header');
+  const bottomNav = document.querySelector('.bottom-nav');
 
-  if (bHome) bHome.classList.add('hidden');
-  if (bTrip) bTrip.classList.add('hidden');
-  if (favBtn) favBtn.classList.add('hidden');
+  bHome.classList.add('hidden');
+  bTrip.classList.add('hidden');
+
+  if (tripHeader) tripHeader.style.display = 'none';
+  mainHeader.classList.remove('hidden');
+  bottomNav.style.display = 'flex';
 
   if (id === 'screen-line-detail') {
-    if (bHome) bHome.classList.remove('hidden');
-    if (favBtn) { favBtn.classList.remove('hidden'); updateFavoriteButton(); }
+    bHome.classList.remove('hidden');
+    bottomNav.style.display = 'none';
   } else if (id === 'screen-trip') {
-    if (bTrip) bTrip.classList.remove('hidden');
+    bTrip.classList.remove('hidden');
+    if (tripHeader) tripHeader.style.display = 'block';
+    mainHeader.classList.add('hidden');
+    bottomNav.style.display = 'none';
+  }
+
+  updateHeader(id);
+}
+
+// =======================
+// UPDATE HEADER
+// =======================
+function updateHeader(screen) {
+  const headerTitle = document.getElementById('header-title');
+  const headerSubtitle = document.getElementById('header-subtitle');
+  const searchBar = document.getElementById('search-bar');
+  const calendarStrip = document.getElementById('calendar-strip');
+  const directionsHeader = document.getElementById('directions-tabs-header');
+  const favoriteBtn = document.getElementById('favorite-btn');
+  const homeSegment = document.getElementById('home-segment');
+
+  if (screen === 'screen-home') {
+    headerTitle.textContent = 'Početna';
+    headerTitle.classList.remove('hidden');
+    headerSubtitle.classList.add('hidden');
+    searchBar.classList.add('hidden');
+    calendarStrip.classList.add('hidden');
+    directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
+    homeSegment.classList.remove('hidden');
+  } else if (screen === 'screen-lines') {
+    headerTitle.textContent = 'Raspored';
+    headerTitle.classList.remove('hidden');
+    headerSubtitle.classList.add('hidden');
+    searchBar.classList.remove('hidden');
+    calendarStrip.classList.add('hidden');
+    directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
+    homeSegment.classList.add('hidden');
+  } else if (screen === 'screen-info') {
+    headerTitle.textContent = 'Informacije'; // NASLOV ZA INFO EKRAN
+    headerTitle.classList.remove('hidden');
+    headerSubtitle.classList.add('hidden');
+    searchBar.classList.add('hidden');
+    calendarStrip.classList.add('hidden');
+    directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
+    homeSegment.classList.add('hidden');
+  } else if (screen === 'screen-line-detail') {
+    headerTitle.textContent = 'Polasci';
+    headerTitle.classList.remove('hidden');
+    headerSubtitle.textContent = currentLine.number;
+    headerSubtitle.classList.remove('hidden');
+    searchBar.classList.add('hidden');
+    calendarStrip.classList.remove('hidden');
+    directionsHeader.classList.remove('hidden');
+    favoriteBtn.classList.remove('hidden');
+    homeSegment.classList.add('hidden');
+    updateFavoriteButton();
+  } else if (screen === 'screen-trip') {
+    headerTitle.classList.add('hidden');
+    headerSubtitle.classList.add('hidden');
+    searchBar.classList.add('hidden');
+    calendarStrip.classList.add('hidden');
+    directionsHeader.classList.add('hidden');
+    favoriteBtn.classList.add('hidden');
+    homeSegment.classList.add('hidden');
   }
 }
 
@@ -235,7 +326,7 @@ window.toggleLineFavorite = toggleLineFavorite;
 function renderCalendar() {
   const container = document.getElementById("calendar-strip");
   container.innerHTML = '';
-  const days = ['Ned', 'Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub'];
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   for (let i = 0; i < 7; i++) {
     const date = new Date();
@@ -304,13 +395,6 @@ function openLineDetail(lineId) {
   renderDirectionTabsHeader();
   renderDepartures();
   showScreen("screen-line-detail");
-  
-  // Draw route on map (if map tab will be used)
-  setTimeout(() => {
-    if (window.busMap) {
-      drawRouteWithAnimation(lineId, currentDirection.id);
-    }
-  }, 100);
 }
 
 // =======================
@@ -327,13 +411,33 @@ function renderDirectionTabsHeader() {
   tab.className = "direction-tab-header";
 
   tab.innerHTML = `
-    <div class="direction-icon-header">↕</div>
+    <div class="direction-icon-header">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9.01 14H2v2h7.01v3L13 15l-3.99-4v3zm5.98-1v-3H22V8h-7.01V5L11 9l3.99 4z"/>
+      </svg>
+    </div>
     <div class="direction-text-header">
-      <span class="from-text-header">iz ${dir.from}</span>
-      <span>→</span>
-      <span class="to-text-header">za ${dir.to}</span>
+      <span class="from-text-header">From ${dir.from}</span>
+      <span class="to-text-header">To ${dir.to}</span>
     </div>
   `;
+
+const directionTabHeader = document.getElementById('direction-tab-header'); 
+
+if (directionTabHeader) {
+  directionTabHeader.addEventListener('click', () => {
+    // 1. Fire physical vibration/haptic
+    triggerHaptic(50); 
+    
+    // 2. (Optional) Log analytics event
+    if (typeof logTransitEvent === 'function') {
+      logTransitEvent('DIRECTION_TAB_CLICKED');
+    }
+    
+    // 3. Your existing logic to switch directions/tabs
+    switchDirection(); 
+  });
+}
 
   tab.onclick = () => {
     const currentIndex = currentLine.directions.findIndex(d => d.id === currentDirection.id);
@@ -343,11 +447,6 @@ function renderDirectionTabsHeader() {
     localStorage.setItem('currentDirectionId', currentDirection.id);
     renderDirectionTabsHeader();
     renderDepartures();
-    
-    // Update route visualization when direction changes
-    if (window.busMap) {
-      drawRouteWithAnimation(currentLine.id, currentDirection.id);
-    }
   };
 
   tabs.appendChild(tab);
@@ -384,6 +483,20 @@ function getDepartureStatus(startTime, endTime) {
 // =======================
 // RENDER DEPARTURES
 // =======================
+function renderNoServiceState() {
+  return `
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
+      <svg width="90" height="90" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.2;">
+        <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" fill="currentColor"/>
+      </svg>
+      <div>
+        <p style="font-size: 17px; font-weight: 600; color: #1C1C1E; margin: 0 0 8px 0;">Ova linija danas ne prometuje.</p>
+        <p style="font-size: 14px; color: #8E8E93; margin: 0; line-height: 1.5;">Izaberi drugi dan da vidiš kad prometuje.</p>
+      </div>
+    </div>
+  `;
+}
+
 function renderDepartures() {
   const list = document.getElementById("departures-list");
   list.innerHTML = "";
@@ -392,100 +505,19 @@ function renderDepartures() {
   const isSchool = isSchoolDay(selectedDate);
 
   if (dayType === 'sunday' && currentLine.schedule.sunday === false) {
-    list.innerHTML = `
-      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
-        <div style="position: relative;">
-          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.15;">
-            <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" fill="currentColor"/>
-          </svg>
-          <div style="position: absolute; top: -25px; right: -30px; font-size: 50px; opacity: 0.2;">
-            <div style="animation: zzz 2s ease-in-out infinite;">z</div>
-          </div>
-          <div style="position: absolute; top: -45px; right: -15px; font-size: 35px; opacity: 0.15;">
-            <div style="animation: zzz 2s ease-in-out infinite 0.3s;">z</div>
-          </div>
-          <div style="position: absolute; top: -60px; right: 0; font-size: 25px; opacity: 0.1;">
-            <div style="animation: zzz 2s ease-in-out infinite 0.6s;">z</div>
-          </div>
-        </div>
-        <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
-          <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
-        </div>
-      </div>
-      <style>
-        @keyframes zzz {
-          0%, 100% { transform: translateY(0px); opacity: 0.2; }
-          50% { transform: translateY(-10px); opacity: 0.05; }
-        }
-      </style>
-    `;
+    list.innerHTML = renderNoServiceState();
     return;
   }
 
   if (dayType === 'saturday' && currentLine.schedule.saturday === false) {
-    list.innerHTML = `
-      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
-        <div style="position: relative;">
-          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.15;">
-            <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" fill="currentColor"/>
-          </svg>
-          <div style="position: absolute; top: -25px; right: -30px; font-size: 50px; opacity: 0.2;">
-            <div style="animation: zzz 2s ease-in-out infinite;">z</div>
-          </div>
-          <div style="position: absolute; top: -45px; right: -15px; font-size: 35px; opacity: 0.15;">
-            <div style="animation: zzz 2s ease-in-out infinite 0.3s;">z</div>
-          </div>
-          <div style="position: absolute; top: -60px; right: 0; font-size: 25px; opacity: 0.1;">
-            <div style="animation: zzz 2s ease-in-out infinite 0.6s;">z</div>
-          </div>
-        </div>
-        <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
-          <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
-        </div>
-      </div>
-      <style>
-        @keyframes zzz {
-          0%, 100% { transform: translateY(0px); opacity: 0.2; }
-          50% { transform: translateY(-10px); opacity: 0.05; }
-        }
-      </style>
-    `;
+    list.innerHTML = renderNoServiceState();
     return;
   }
 
   const departures = currentDirection.departures[dayType] || [];
 
   if (departures.length === 0) {
-    list.innerHTML = `
-      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; gap: 20px;">
-        <div style="position: relative;">
-          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.15;">
-            <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" fill="currentColor"/>
-          </svg>
-          <div style="position: absolute; top: -25px; right: -30px; font-size: 50px; opacity: 0.2;">
-            <div style="animation: zzz 2s ease-in-out infinite;">z</div>
-          </div>
-          <div style="absolute; top: -45px; right: -15px; font-size: 35px; opacity: 0.15;">
-            <div style="animation: zzz 2s ease-in-out infinite 0.3s;">z</div>
-          </div>
-          <div style="position: absolute; top: -60px; right: 0; font-size: 25px; opacity: 0.1;">
-            <div style="animation: zzz 2s ease-in-out infinite 0.6s;">z</div>
-          </div>
-        </div>
-        <div>
-          <p style="font-size: 22px; font-weight: 700; color: rgba(228, 228, 228, 1); margin: 0 0 8px 0;">Tiho! Ova linija trenutno spava.</p>
-          <p style="font-size: 15px; color: rgba(150, 150, 150, 1); margin: 0; line-height: 1.5;">Navedena linija ne prometuje danas, izaberi<br>drugi dan da vidiš kad prometuje.</p>
-        </div>
-      </div>
-      <style>
-        @keyframes zzz {
-          0%, 100% { transform: translateY(0px); opacity: 0.2; }
-          50% { transform: translateY(-10px); opacity: 0.05; }
-        }
-      </style>
-    `;
+    list.innerHTML = renderNoServiceState();
     return;
   }
 
@@ -503,8 +535,6 @@ function renderDepartures() {
 
     const card = document.createElement("div");
     card.className = `departure-card ${status}`;
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(10px)';
 
     card.innerHTML = `
       <span class="departure-time-start">${startTime}</span>
@@ -514,13 +544,6 @@ function renderDepartures() {
 
     card.onclick = () => openTrip(departure);
     list.appendChild(card);
-
-    // Staggered fade-in animation
-    setTimeout(() => {
-      card.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
-    }, index * 30); // 30ms delay between each card
   });
 }
 
@@ -530,9 +553,7 @@ function renderDepartures() {
 function openTrip(departure) {
   localStorage.setItem('currentDepartureTime', departure.time);
 
-  const tripHeaderTop = document.getElementById('trip-header-top');
-  if (tripHeaderTop) tripHeaderTop.innerHTML = `<span style="display:inline-block;background:#ffc400;color:#1a1a1a;font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;">${currentLine.number}</span>`;
-  document.getElementById('trip-header-line').textContent = currentLine.name;
+  document.getElementById('trip-header-line').textContent = `${currentLine.number} - ${currentLine.name}`;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -540,12 +561,12 @@ function openTrip(departure) {
   tripDate.setHours(0, 0, 0, 0);
   const diffDays = Math.floor((tripDate - today) / (1000 * 60 * 60 * 24));
 
-  let dateText = 'Danas';
+  let dateText = 'Today';
   if (diffDays === 1) {
-    dateText = 'Sutra';
+    dateText = 'Tomorrow';
   } else if (diffDays > 1) {
-    const days = ['Ned', 'Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     dateText = `${days[tripDate.getDay()]}, ${tripDate.getDate()} ${months[tripDate.getMonth()]}`;
   }
 
@@ -603,9 +624,8 @@ function openTrip(departure) {
       const arrivalDate = new Date(departureDate.getTime() + arrivalMinutes * 60000);
       const arrivalTime = `${String(arrivalDate.getHours()).padStart(2, '0')}:${String(arrivalDate.getMinutes()).padStart(2, '0')}`;
 
-      const isBusHere = (index === currentStopIndex);
-      const busIconHtml = isBusHere
-        ? `<div class="stop-icon-bus"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg></div>`
+      const busIcon = (index === currentStopIndex) 
+        ? '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>'
         : '';
 
       let timeDisplay = arrivalTime;
@@ -613,12 +633,12 @@ function openTrip(departure) {
 
       if (isToday && timeLeft > 0 && timeLeft <= 10 && index >= currentStopIndex) {
         const mins = Math.round(timeLeft);
-        timeDisplay = `<span class="time-number">${mins}</span><span class="time-unit">min</span>`;
+        timeDisplay = `<span class="time-number" style="font-weight: 800; font-size: 32px;">${mins}</span> <span class="time-unit">min</span>`;
       }
 
       row.innerHTML = `
         <div class="stop-icon ${iconClass}">
-          ${busIconHtml}
+          ${busIcon}
         </div>
         <div class="stop-content ${statusClass}">
           <span class="stop-name">${stop.name}</span>
@@ -676,38 +696,26 @@ document.getElementById("search-input").addEventListener("input", (e) => {
 // BOTTOM NAV TAB SWITCHING
 // =======================
 function switchToTab(tab) {
-  // 1. Ažuriraj aktivno stanje
-  localStorage.setItem('lastActiveTab', tab);
+  const currentScreen = localStorage.getItem('currentScreen');
 
-  // 2. Očisti aktivnu klasu sa svih navigacijskih stavki
-  const navItems = document.querySelectorAll('.nav-item');
-  navItems.forEach(item => item.classList.remove('active'));
-
-  // 3. Postavi aktivnu klasu na odgovarajuću stavku (po indeksu)
-  const tabIndexMap = { home: 0, lines: 1, map: 2, info: 3 };
-  if (tabIndexMap[tab] !== undefined) {
-    navItems[tabIndexMap[tab]].classList.add('active');
+  if (currentScreen === 'screen-line-detail' || currentScreen === 'screen-trip') {
+    return;
   }
 
-  // 4. Prebaci ekran
+  localStorage.setItem('lastActiveTab', tab);
+
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  if(event && event.currentTarget) {
+      event.currentTarget.classList.add('active');
+  }
+
   if (tab === 'lines') {
     showScreen('screen-lines');
   } else if (tab === 'home') {
     showScreen('screen-home');
+    renderHomeScreen();
   } else if (tab === 'info') {
-    showScreen('screen-info');
-  } else if (tab === 'map') {
-    showScreen('screen-map');
-    // Inicijalizira mapu pri prvom otvaranju, pa invalidira veličinu
-    setTimeout(() => {
-      if (typeof initBusMap === 'function') initBusMap();
-      if (window.busMap) window.busMap.invalidateSize();
-      
-      // Draw route if a line is currently selected
-      if (currentLine && currentDirection && typeof drawRouteWithAnimation === 'function') {
-        drawRouteWithAnimation(currentLine.id, currentDirection.id);
-      }
-    }, 50);
+    showScreen('screen-info'); // POVEZUJE INFO EKRAN
   }
 }
 
@@ -719,15 +727,6 @@ function restoreState() {
   const savedLineId = localStorage.getItem('currentLineId');
   const savedDirectionId = localStorage.getItem('currentDirectionId');
   const savedDepartureTime = localStorage.getItem('currentDepartureTime');
-
-  // Postavi aktivni nav item na osnovu zadnjeg taba
-  const lastTab = localStorage.getItem('lastActiveTab') || 'home';
-  const tabIndexMap = { home: 0, lines: 1, map: 2, info: 3 };
-  const navItems = document.querySelectorAll('.nav-item');
-  navItems.forEach(item => item.classList.remove('active'));
-  if (tabIndexMap[lastTab] !== undefined) {
-    navItems[tabIndexMap[lastTab]].classList.add('active');
-  }
 
   if (savedScreen && savedLineId) {
     currentLine = LINES.find(l => l.id == savedLineId);
@@ -758,48 +757,6 @@ function restoreState() {
   } else {
     showScreen('screen-home');
   }
-}
-
-/**
- * Računa koliko minuta je ostalo do dolaska busa na zadanu stanicu
- * @param {string} stopName - Naziv stanice
- * @param {string} lineId - ID linije
- * @param {string} directionId - ID smjera
- */
-// Popravljena funkcija u app.js
-function getMinutesUntilArrival(stopName, lineId, directionId) {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    
-    const line = LINES.find(l => l.id === lineId);
-    if (!line) return null;
-    
-    const direction = line.directions.find(d => d.id === directionId);
-    if (!direction) return null;
-
-    // ODREĐIVANJE TIPA DANA (Workday/Saturday/Sunday)
-    const dayType = getDayType(now); 
-    const departures = direction.departures[dayType] || [];
-
-    let minDiff = Infinity;
-    let found = false;
-
-    departures.forEach(dep => {
-        const stopInfo = dep.stops.find(s => s.name === stopName);
-        if (stopInfo) {
-            const [h, m] = dep.time.split(':').map(Number);
-            const arrivalTime = (h * 60 + m) + stopInfo.offset;
-            
-            const diff = arrivalTime - currentMinutes;
-            // Gledamo samo buseve koji još nisu prošli (ili su tu unutar 2 min)
-            if (diff >= -2 && diff < minDiff) {
-                minDiff = diff;
-                found = true;
-            }
-        }
-    });
-
-    return found ? Math.round(minDiff) : null;
 }
 
 // =======================

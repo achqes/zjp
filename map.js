@@ -1,318 +1,127 @@
 // =======================
-// ENHANCED BUS MAP SYSTEM
-// - Directional stop markers (each side of street shows only relevant buses)
-// - Route visualization with animation
-// - User location tracking
+// ZENICA MAP - STANICE ONLY
 // =======================
 
-let mapInitialized = false;
-let userLocationMarker = null;
-let userLocationWatchId = null;
+let map;
+let stopMarkers = {};
 
-// =======================
-// USER LOCATION TRACKING
-// =======================
+// Zenica coordinates
+const ZENICA_CENTER = [44.2035, 17.9078];
 
-function startUserLocationTracking() {
-  if (!navigator.geolocation) return;
+// Bus stops coordinates (dodaj sve stvarne stanice)
+const BUS_STOPS = [
+  { id: 1, name: "Zenica AS", lat: 44.2035, lng: 17.9078 },
+  { id: 2, name: "Hotel Metalurg", lat: 44.2045, lng: 17.9088 },
+  { id: 3, name: "Stadion", lat: 44.2025, lng: 17.9068 },
+  { id: 4, name: "Općina", lat: 44.2055, lng: 17.9098 },
+  { id: 5, name: "Bolnica", lat: 44.2065, lng: 17.9108 },
+  { id: 6, name: "Novi Most", lat: 44.2075, lng: 17.9118 },
+  { id: 7, name: "Garnizon", lat: 44.2085, lng: 17.9128 },
+  { id: 8, name: "Blatuša", lat: 44.2015, lng: 17.9058 },
+  { id: 9, name: "Stara Pijaca", lat: 44.2040, lng: 17.9083 },
+  { id: 10, name: "Džamija", lat: 44.2050, lng: 17.9093 },
+  { id: 11, name: "Gornja Zenica", lat: 44.2095, lng: 17.9138 },
+  { id: 12, name: "Lukovo Polje", lat: 44.2105, lng: 17.9148 },
+  { id: 13, name: "Klopče", lat: 44.1980, lng: 17.9030 },
+  { id: 14, name: "Donja Gračanica", lat: 44.2000, lng: 17.9200 },
+  { id: 15, name: "Ričice", lat: 44.2020, lng: 17.9050 },
+];
 
-  navigator.geolocation.getCurrentPosition(
-    (position) => updateUserLocationOnMap(position.coords),
-    (error) => console.log("Location access denied:", error),
-    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
-  );
+// Initialize map
+function initMap() {
+  map = L.map('map-container', {
+    zoomControl: true,
+    attributionControl: false
+  }).setView(ZENICA_CENTER, 13);
 
-  if (!userLocationWatchId) {
-    userLocationWatchId = navigator.geolocation.watchPosition(
-      (position) => updateUserLocationOnMap(position.coords),
-      null,
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
-    );
-  }
-}
+  // Light mode tiles
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+  }).addTo(map);
 
-function updateUserLocationOnMap(coords) {
-  if (!window.busMap) return;
-  const latlng = [coords.latitude, coords.longitude];
+  // Add bus stops
+  BUS_STOPS.forEach(stop => {
+    const marker = L.circleMarker([stop.lat, stop.lng], {
+      radius: 10,
+      fillColor: '#FF3B30',
+      color: '#fff',
+      weight: 3,
+      opacity: 1,
+      fillOpacity: 0.9
+    }).addTo(map);
 
-  if (userLocationMarker) {
-    userLocationMarker.setLatLng(latlng);
-  } else {
-    const pulseIcon = L.divIcon({
-      className: '',
-      html: `
-        <div style="width:32px;height:32px;background:radial-gradient(circle,rgba(59,130,246,0.4) 0%,transparent 70%);border-radius:50%;position:absolute;top:-16px;left:-16px;animation:pulse 2s infinite;"></div>
-        <div style="width:12px;height:12px;background:#3b82f6;border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);position:absolute;top:-6px;left:-6px;"></div>
-      `,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6]
-    });
-    userLocationMarker = L.marker(latlng, { icon: pulseIcon })
-      .addTo(window.busMap)
-      .bindTooltip("Tvoja lokacija", { permanent: false, direction: 'top', offset: [0, -10] });
-  }
-}
-
-function stopUserLocationTracking() {
-  if (userLocationWatchId) {
-    navigator.geolocation.clearWatch(userLocationWatchId);
-    userLocationWatchId = null;
-  }
-  if (userLocationMarker) {
-    window.busMap.removeLayer(userLocationMarker);
-    userLocationMarker = null;
-  }
-}
-
-// =======================
-// ROUTE VISUALIZATION
-// =======================
-
-/**
- * Otvara modal sa informacijama o stanici i proračunava dolaske
- * stop_obj = { name, lat, lng }
- */
-// =======================
-// STOP SHEET UI
-// =======================
-
-function openStopSheet(stop_obj) {
-  const sheet = document.getElementById('stop-sheet');
-  const backdrop = document.getElementById('stop-sheet-backdrop');
-  const arrivalsContainer = document.getElementById('stop-sheet-arrivals');
-  const stopNameEl = document.getElementById('stop-sheet-name');
-
-  if (!sheet || !arrivalsContainer || !stopNameEl) {
-    console.error("Stop sheet elementi nisu pronađeni u HTML-u!");
-    return;
-  }
-
-  stopNameEl.textContent = stop_obj.name;
-
-  // Pronađi autobuse samo za ovu specifičnu stranu ulice
-  const arrivals = getArrivalsAtCoordinate(stop_obj.name, stop_obj.lat, stop_obj.lng);
-
-  if (arrivals.length === 0) {
-    arrivalsContainer.innerHTML = `
-      <div class="stop-sheet-empty">
-        <p>Trenutno nema planiranih polazaka u sljedećih 90 minuta.</p>
-      </div>`;
-  } else {
-    arrivalsContainer.innerHTML = arrivals.map(bus => {
-      let countdownClass, countdownText;
-      if (bus.minutesFromNow <= 1) {
-        countdownClass = 'stop-arrival-now';
-        countdownText = 'Sada';
-      } else if (bus.minutesFromNow <= 10) {
-        countdownClass = 'stop-arrival-soon';
-        countdownText = `${bus.minutesFromNow} min`;
-      } else {
-        countdownClass = 'stop-arrival-time';
-        countdownText = `${bus.minutesFromNow} min`;
-      }
-
-      return `
-        <div class="stop-arrival-row" onclick="openLineFromStop(${bus.lineId})">
-          <div class="stop-arrival-line-badge">${bus.lineNumber}</div>
-          <div class="stop-arrival-info">
-            <div class="stop-arrival-direction">${bus.directionTo}</div>
-            <div class="stop-arrival-from">iz ${bus.directionFrom} · ${bus.arrivalTime}</div>
-          </div>
-          <div class="stop-arrival-countdown">
-            <span class="${countdownClass}">${countdownText}</span>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  sheet.classList.add('open');
-  backdrop.classList.add('open');
-}
-
-// Dodaj i funkciju za zatvaranje
-function closeStopSheet() {
-  document.getElementById('stop-sheet').classList.remove('open');
-  document.getElementById('stop-sheet-backdrop').classList.remove('open');
-}
-
-// Funkcija koja omogućava da klikneš na bus u stanici i otvoriš tu liniju
-function openLineFromStop(lineId) {
-  closeStopSheet();
-  switchToTab('lines');
-  openLineDetail(lineId);
-}
-
-// =======================
-// ROUTE VISUALIZATION
-// =======================
-
-let currentRouteLayer = null;
-
-function drawRouteWithAnimation(lineId, directionId) {
-  if (!window.busMap) return; // Mapa još nije inicijalizirana
-  if (currentRouteLayer) {
-    currentRouteLayer.clearLayers();
-  } else {
-    currentRouteLayer = L.featureGroup().addTo(window.busMap);
-  }
-
-  const line = LINES.find(l => l.id === lineId);
-  if (!line) return;
-
-  const direction = line.directions.find(d => d.id === directionId);
-  if (!direction) return;
-
-  const dayOfWeek = new Date().getDay();
-  let dayType = 'workdays';
-  if (dayOfWeek === 0) dayType = 'sunday';
-  else if (dayOfWeek === 6) dayType = 'saturday';
-
-  const departures = direction.departures[dayType] || [];
-  if (departures.length === 0) return;
-
-  const firstDeparture = departures;
-  const now = new Date();
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-
-  const coordsArray = [];
-  let passedStopsCount = 0;
-
-  firstDeparture.stops.forEach((stopInfo) => {
-    // getStopCoordinates sada vraća null za hidden stanice
-    const coords = getStopCoordinates(stopInfo.name, direction.to, direction.from);
+    marker.bindPopup(`<b>${stop.name}</b>`);
+    marker.on('click', () => showStopInfo(stop));
     
-    if (coords) {
-      const isPassed = stopInfo.offset <= nowMinutes;
-      if (isPassed) passedStopsCount++;
+    stopMarkers[stop.id] = marker;
+  });
+}
 
-      coordsArray.push({ latLng: [coords.lat, coords.lng], isPassed });
+// Show stop info popup
+function showStopInfo(stop) {
+  const popup = document.getElementById('stop-info-popup');
+  const stopName = document.getElementById('stop-name');
+  const linesList = document.getElementById('stop-lines-list');
 
-      const markerColor = isPassed ? '#666666' : '#e6bc36';
+  stopName.textContent = stop.name;
+  linesList.innerHTML = '';
 
-      const marker = L.circleMarker([coords.lat, coords.lng], {
-        radius: 7,
-        fillColor: markerColor,
-        color: '#ffffff',
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.9
-      }).addTo(currentRouteLayer);
-
-      marker.bindTooltip(stopInfo.name, { permanent: false, direction: 'top', offset: [0, -10] });
-    }
+  // Find which lines pass through this stop
+  const linesAtStop = LINES.filter(line => {
+    return line.directions.some(dir => {
+      const allStops = dir.departures.workdays || [];
+      if (allStops.length > 0) {
+        return allStops[0].stops.some(s => s.name === stop.name);
+      }
+      return false;
+    });
   });
 
-  // Iscrtavanje linija samo preko valjanih koordinata
-  if (coordsArray.length >= 2) {
-    const passedCoords = coordsArray.slice(0, Math.max(passedStopsCount, 0)).map(s => s.latLng);
-    const upcomingCoords = coordsArray.slice(Math.max(passedStopsCount - 1, 0)).map(s => s.latLng);
-
-    if (passedCoords.length >= 2) {
-      L.polyline(passedCoords, { color: '#555555', weight: 4, opacity: 0.7, lineCap: 'round', lineJoin: 'round' }).addTo(currentRouteLayer);
-    }
-    if (upcomingCoords.length >= 2) {
-      L.polyline(upcomingCoords, { color: '#007AFF', weight: 4, opacity: 0.5, lineCap: 'round', lineJoin: 'round', dashArray: '8, 6' }).addTo(currentRouteLayer);
-    }
-  }
-
-  setTimeout(() => {
-      if (currentRouteLayer && currentRouteLayer.getBounds && currentRouteLayer.getBounds().isValid()) {
-        window.busMap.fitBounds(currentRouteLayer.getBounds(), { padding: [20, 20] });
-      }
-    }, 50);
-  }
-
-  function clearRoute() {
-    if (currentRouteLayer) currentRouteLayer.clearLayers();
-  }
-
-function clearRoute() {
-  if (currentRouteLayer) currentRouteLayer.clearLayers();
-}
-
-// =======================
-// MAP INITIALIZATION
-// =======================
-
-function initBusMap() {
-  if (mapInitialized) return;
-  mapInitialized = true;
-
-  // Sagradi mapu koja povezuje svaku fizičku lokaciju sa smjerovima
-  buildStopDirectionMap();
-
-  window.busMap = L.map('map-container', { zoomControl: false }).setView([44.2070, 17.9130], 14);
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO',
-    maxZoom: 19
-  }).addTo(window.busMap);
-
-  L.control.zoom({ position: 'bottomright' }).addTo(window.busMap);
-
-  startUserLocationTracking();
-
-  let markers = [];
-
-  function makeStopIcon(zoom) {
-    const size = zoom >= 15 ? 14 : 10;
-    return L.divIcon({
-      className: '',
-      html: `<div style="width:${size}px;height:${size}px;background:#007AFF;border:2.5px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.5);"></div>`,
-      iconSize: [size, size],
-      iconAnchor: [size/2, size/2]
+  if (linesAtStop.length === 0) {
+    linesList.innerHTML = '<p style="color: #8e8e93; text-align: center; padding: 20px;">Nema linija na ovoj stanici</p>';
+  } else {
+    linesAtStop.forEach(line => {
+      const item = document.createElement('div');
+      item.className = 'stop-line-item';
+      item.innerHTML = `
+        <div class="stop-line-number">${line.number}</div>
+        <span>${line.name}</span>
+      `;
+      linesList.appendChild(item);
     });
   }
 
-  function updateMarkers() {
-    const zoom = window.busMap.getZoom();
-    markers.forEach(m => window.busMap.removeLayer(m));
-    markers = [];
-
-    // For each stop in PHYSICAL_STOPS, place a marker per unique coordinate
-    // Each marker only shows buses that go in the directions matching that side
-    for (const stopName in PHYSICAL_STOPS) {
-      const stopDef = PHYSICAL_STOPS[stopName];
-      const allCoords = getAllStopCoordinates(stopName);
-
-      allCoords.forEach(coordEntry => {
-        const stop_obj = {
-          name: stopName,
-          lat: coordEntry.lat,
-          lng: coordEntry.lng
-        };
-
-        const marker = L.marker([coordEntry.lat, coordEntry.lng], { icon: makeStopIcon(zoom) })
-          .addTo(window.busMap)
-          .on('click', () => {
-            // Prosledi samo stop_obj sa koordinatama - sve ostalo se računa iz STOP_DIRECTION_MAP
-            openStopSheet(stop_obj);
-          });
-
-        if (zoom >= 15) {
-          marker.bindTooltip(stopName, {
-            permanent: true,
-            direction: 'right',
-            offset: [8, 0],
-            className: 'stop-label'
-          }).openTooltip();
-        }
-
-        markers.push(marker);
-      });
-    }
-  }
-
-  window.busMap.on('zoomend', updateMarkers);
-  updateMarkers();
-
-  // Pulse animation CSS
-  const style = document.createElement('style');
-  style.textContent = `@keyframes pulse{0%{transform:scale(1);opacity:1;}50%{transform:scale(1.2);opacity:0.7;}100%{transform:scale(1);opacity:1;}}`;
-  document.head.appendChild(style);
+  popup.classList.remove('hidden');
 }
 
-window.addEventListener('beforeunload', () => {
-  stopUserLocationTracking();
-});
+// Close stop info
+document.getElementById('close-stop-info').onclick = () => {
+  document.getElementById('stop-info-popup').classList.add('hidden');
+};
+
+// Navigation
+document.getElementById('nav-home').onclick = () => {
+  document.getElementById('screen-lines').classList.add('active');
+  document.getElementById('screen-map').classList.remove('active');
+  document.getElementById('screen-line-detail').classList.remove('active');
+  document.getElementById('screen-trip').classList.remove('active');
+  document.getElementById('nav-home').classList.add('active');
+  document.getElementById('nav-map').classList.remove('active');
+  document.getElementById('main-header').classList.remove('hidden');
+  document.getElementById('bottom-nav').style.display = 'flex';
+};
+
+document.getElementById('nav-map').onclick = () => {
+  document.getElementById('screen-lines').classList.remove('active');
+  document.getElementById('screen-line-detail').classList.remove('active');
+  document.getElementById('screen-trip').classList.remove('active');
+  document.getElementById('screen-map').classList.add('active');
+  document.getElementById('nav-home').classList.remove('active');
+  document.getElementById('nav-map').classList.add('active');
+  document.getElementById('main-header').classList.add('hidden');
+  document.getElementById('bottom-nav').style.display = 'flex';
+  
+  if (!map) {
+    setTimeout(initMap, 100);
+  }
+};
