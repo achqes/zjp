@@ -1,0 +1,31 @@
+Copyright (c) 2026 Marko Opačak. All Rights Reserved.
+
+This software, including its source code, design, structure, and all
+associated content ("the Software"), is the proprietary property of
+Marko Opačak. The Software is made available for public use through
+the zePrijevoz website solely for personal, non-commercial viewing and
+use by end users.
+
+No permission is granted to any person to:
+
+  - Copy, reproduce, or redistribute the source code, in whole or in
+    part, in any form.
+  - Modify, adapt, translate, or create derivative works based on the
+    Software.
+  - Decompile, reverse-engineer, or otherwise attempt to derive the
+    source code from any minified, obfuscated, or compiled form of the
+    Software.
+  - Use the Software, or any portion of it, for commercial purposes.
+  - Republish, mirror, or redistribute the Software or its content on
+    any other website, application, or platform without prior written
+    permission.
+
+All rights not expressly granted are reserved by the copyright holder.
+
+Unauthorized use, reproduction, or distribution of this Software or
+any portion of it may result in civil and/or criminal penalties under
+applicable copyright law, and will be prosecuted to the maximum extent
+possible under the law.
+
+For licensing inquiries or permission requests, contact:
+markoopacak08@gmail.com
