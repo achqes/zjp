@@ -14,6 +14,12 @@ function sameForAllDays(departures) {
 }
 
 // =======================
+// DATUM AZURIRANJA PODATAKA
+// =======================
+// Rucno azuriraj ovaj datum kad promijenis raspored voznje
+const DATA_LAST_UPDATED = "21.08.2026.";
+
+// =======================
 // ZENICA GRADSKE LINIJE
 // =======================
 const LINES = [
@@ -92,7 +98,7 @@ const LINES = [
         to: "Autobusni Kolodvor",
         departures: {
           workdays: createDepartures(
-            ["05:50", "07:00", "08:20", "10:00", "11:30", "12:30", "14:00", "16:20", "18:00", "20:15", "22:00"],
+            ["05:50", "07:00", "08:20", "10:00", "11:30", "12:30", "14:00", "16:15", "18:00", "19:00", "20:15", "22:00"],
             [
               {name: "Gornja Zenica", offset: 0},
               {name: "Bare", offset: 2},
@@ -110,7 +116,7 @@ const LINES = [
             ]
           ),
           saturday: createDepartures(
-            ["05:50", "07:00", "08:20", "10:00", "11:30", "12:30", "14:00", "16:20", "18:00", "20:15", "22:00"],
+            ["05:50", "07:00", "08:20", "10:00", "11:30", "12:30", "14:00", "16:15", "18:00", "19:00", "20:15", "22:00"],
             [
               {name: "Gornja Zenica", offset: 0},
               {name: "Bare", offset: 2},
@@ -277,33 +283,75 @@ const LINES = [
           workdays: createDepartures(
             ["05:20", "06:10", "09:00", "11:10", "12:15", "14:20", "15:30", "17:00", "18:20", "20:00", "22:00"],
             [
-              {name: "Bolnica", offset: 0},
-              {name: "Babina Rijeka", offset: 3},
-              {name: "Komplex A", offset: 5},
-              {name: "Garnizon", offset: 8},
-              {name: "Novi Most", offset: 10},
-              {name: "Džamija", offset: 12},
-              {name: "Stara Pijaca", offset: 14},
-              {name: "Hotel Metalurg", offset: 16},
-              {name: "Pehare", offset: 22},
-              {name: "Ričice (Bremina)", offset: 23},
-              {name: "Sviće", offset: 25}
+              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Stadion", offset: 3},
+              {name: "Općina", offset: 5},
+              {name: "Carina R", offset: 6},
+              {name: "Lovački Dom", offset: 7},
+              {name: "Dom Armije BiH", offset: 9},
+              {name: "Odmut KT", offset: 11},
+              {name: "Zelenilo", offset: 12},
+              {name: "Rudnik", offset: 14},
+              {name: "Poljice", offset: 15},
+              {name: "Raspotočje", offset: 18},
+              {name: "Mišurin Do", offset: 19},
+              {name: "Drivuša KT", offset: 19},
+              {name: "Bare", offset: 20},
+              {name: "Komercijala", offset: 22},
+              {name: "Metalno", offset: 23},
+              {name: "Janjići (škola)", offset: 26},
+              {name: "Janjići (prodavnica)", offset: 27},
+              {name: "Janjići", offset: 28},
             ]
             ),
           saturday: createDepartures(
             ["05:20", "06:10", "09:00", "11:10", "12:15", "14:20", "15:30", "17:00", "18:20", "20:00", "22:00"],
             [
-              {name: "Bolnica", offset: 0},
-              {name: "Babina Rijeka", offset: 3},
-              {name: "Komplex A", offset: 5},
-              {name: "Garnizon", offset: 8},
-              {name: "Novi Most", offset: 10},
-              {name: "Džamija", offset: 12},
-              {name: "Stara Pijaca", offset: 14},
-              {name: "Hotel Metalurg", offset: 16},
-              {name: "Pehare", offset: 22},
-              {name: "Ričice (Bremina)", offset: 23},
-              {name: "Sviće", offset: 25}
+              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Stadion", offset: 3},
+              {name: "Općina", offset: 5},
+              {name: "Carina R", offset: 6},
+              {name: "Lovački Dom", offset: 7},
+              {name: "Dom Armije BiH", offset: 9},
+              {name: "Odmut", offset: 10},
+              {name: "Odmut KT", offset: 11},
+              {name: "Zelenilo", offset: 12},
+              {name: "Rudnik", offset: 14},
+              {name: "Poljice", offset: 15},
+              {name: "Raspotočje", offset: 18},
+              {name: "Mišurin Do", offset: 19},
+              {name: "Drivuša KT", offset: 19},
+              {name: "Bare", offset: 20},
+              {name: "Komercijala", offset: 22},
+              {name: "Metalno", offset: 23},
+              {name: "Janjići (škola)", offset: 26},
+              {name: "Janjići (prodavnica)", offset: 27},
+              {name: "Janjići", offset: 28},
+            ]
+          ),
+                    sunday: createDepartures(
+            ["05:20", "06:10", "09:00", "11:10", "12:15", "14:20", "15:30", "17:00", "18:20", "20:00", "22:00"],
+            [
+              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Stadion", offset: 3},
+              {name: "Općina", offset: 5},
+              {name: "Carina R", offset: 6},
+              {name: "Lovački Dom", offset: 7},
+              {name: "Dom Armije BiH", offset: 9},
+              {name: "Odmut", offset: 10},
+              {name: "Odmut KT", offset: 11},
+              {name: "Zelenilo", offset: 12},
+              {name: "Rudnik", offset: 14},
+              {name: "Poljice", offset: 15},
+              {name: "Raspotočje", offset: 18},
+              {name: "Mišurin Do", offset: 19},
+              {name: "Drivuša KT", offset: 19},
+              {name: "Bare", offset: 20},
+              {name: "Komercijala", offset: 22},
+              {name: "Metalno", offset: 23},
+              {name: "Janjići (škola)", offset: 26},
+              {name: "Janjići (prodavnica)", offset: 27},
+              {name: "Janjići", offset: 28},
             ]
           )
       }
@@ -315,35 +363,78 @@ const LINES = [
         to: "Autobusni Kolodvor",
         departures: {
           workdays: createDepartures(
-            ["05:40", "06:40", "09:40","11:50","13:00","14:55","16:00","17:40","18:55","20:30","22:35"],
+            ["05:45", "06:40", "09:40","11:50","13:00","14:55","16:00","17:40","18:55","20:30","22:35"],
             [
-            {name: "Sviće", offset: 0},
-              {name: "Ričice (Bremina)", offset: 2},
-              {name: "Pehare", offset: 3},
-              {name: "Hotel Metalurg", offset: 9},
-              {name: "Stara Pijaca", offset: 11},
-              {name: "Džamija", offset: 13},
-              {name: "Novi Most", offset: 15},
-              {name: "Garnizon", offset: 17},
-              {name: "Komplex A", offset: 20},
-              {name: "Babina Rijeka", offset: 22},
-              {name: "Bolnica", offset: 25}
+              { name: "Janjići", offset: 0 },
+  { name: "Janjići (prodavnica)", offset: 1 },
+  { name: "Janjići (škola)", offset: 2 },
+  { name: "Metalno", offset: 5 },
+  { name: "Komercijala", offset: 6 },
+  { name: "Bare", offset: 8 },
+  { name: "Drivuša KT", offset: 9 },
+  { name: "Mišurin Do", offset: 9 },
+  { name: "Raspotočje", offset: 10 },
+  { name: "Poljice", offset: 13 },
+  { name: "Rudnik", offset: 14 },
+  { name: "Zelenilo", offset: 16 },
+  { name: "Odmut KT", offset: 17 },
+  { name: "Odmut", offset: 18 },
+  { name: "Dom Armije BiH", offset: 19 },
+  { name: "Lovački Dom", offset: 21 },
+  { name: "Carina R", offset: 22 },
+  { name: "Općina", offset: 23 },
+  { name: "Stadion", offset: 25 },
+  { name: "Autobusni Kolodvor", offset: 28 }
             ]
             ),
-          sunday: createDepartures(
-            ["05:40", "06:40", "09:40","11:50","13:00","14:55","16:00","17:40","18:55","20:30","22:35"],
+          saturday: createDepartures(
+            ["05:45", "06:40", "09:40","11:50","13:00","14:55","16:00","17:40","18:55","20:30","22:35"],
             [
-              {name: "Sviće", offset: 0},
-              {name: "Ričice (Bremina)", offset: 2},
-              {name: "Pehare", offset: 3},
-              {name: "Hotel Metalurg", offset: 9},
-              {name: "Stara Pijaca", offset: 11},
-              {name: "Džamija", offset: 13},
-              {name: "Novi Most", offset: 15},
-              {name: "Garnizon", offset: 17},
-              {name: "Komplex A", offset: 20},
-              {name: "Babina Rijeka", offset: 22},
-              {name: "Bolnica", offset: 25}
+              { name: "Janjići", offset: 0 },
+  { name: "Janjići (prodavnica)", offset: 1 },
+  { name: "Janjići (škola)", offset: 2 },
+  { name: "Metalno", offset: 5 },
+  { name: "Komercijala", offset: 6 },
+  { name: "Bare", offset: 8 },
+  { name: "Drivuša KT", offset: 9 },
+  { name: "Mišurin Do", offset: 9 },
+  { name: "Raspotočje", offset: 10 },
+  { name: "Poljice", offset: 13 },
+  { name: "Rudnik", offset: 14 },
+  { name: "Zelenilo", offset: 16 },
+  { name: "Odmut KT", offset: 17 },
+  { name: "Odmut", offset: 18 },
+  { name: "Dom Armije BiH", offset: 19 },
+  { name: "Lovački Dom", offset: 21 },
+  { name: "Carina R", offset: 22 },
+  { name: "Općina", offset: 23 },
+  { name: "Stadion", offset: 25 },
+  { name: "Autobusni Kolodvor", offset: 28 }
+            ]
+          ),
+                    sunday: createDepartures(
+            ["05:45", "06:40", "09:40","11:50","13:00","14:55","16:00","17:40","18:55","20:30","22:35"],
+            [
+              { name: "Janjići", offset: 0 },
+  { name: "Janjići (prodavnica)", offset: 2 },
+  { name: "Janjići (škola)", offset: 4 },
+  { name: "Metalno", offset: 6 },
+  { name: "Komercijala", offset: 7 },
+  { name: "Bare", offset: 9 },
+  { name: "Drivuša KT", offset: 11 },
+  { name: "Mišurin Do", offset: 13 },
+  { name: "Raspotočje", offset: 15 },
+  { name: "Poljice", offset: 17 },
+  { name: "Rudnik", offset: 18 },
+  { name: "Zelenilo", offset: 19 },
+  { name: "Odmut KT", offset: 17 },
+  { name: "Odmut", offset: 20 },
+  { name: "Dom Armije BiH", offset: 22 },
+  { name: "Lovački Dom", offset: 23 },
+  { name: "Carina R", offset: 24 },
+  { name: "Općina", offset: 27 },
+  { name: "Stadion", offset: 29 },
+  { name: "Autobusni Kolodvor", offset: 33 }
             ]
           ),
         }
@@ -366,33 +457,51 @@ const LINES = [
           workdays: createDepartures(
             ["05:15", "06:20", "07:20", "08:20", "09:20", "10:20", "11:20", "12:20", "13:20", "14:20", "15:20", "16:20", "17:20", "18:20", "19:20", "21:20", "23:20"],
             [
-              {name: "Bolnica", offset: 0},
-              {name: "Babina Rijeka", offset: 3},
-              {name: "Komplex A", offset: 5},
-              {name: "Garnizon", offset: 8},
-              {name: "Novi Most", offset: 10},
-              {name: "Džamija", offset: 12},
-              {name: "Stara Pijaca", offset: 14},
-              {name: "Hotel Metalurg", offset: 16},
-              {name: "Pehare", offset: 22},
-              {name: "Ričice (Bremina)", offset: 23},
-              {name: "Sviće", offset: 25}
+              { name: "Janjići", offset: 0 },
+  { name: "Janjići (prodavnica)", offset: 2 },
+  { name: "Janjići (škola)", offset: 4 },
+  { name: "Metalno", offset: 6 },
+  { name: "Komercijala", offset: 7 },
+  { name: "Bare", offset: 9 },
+  { name: "Drivuša KT", offset: 11 },
+  { name: "Mišurin Do", offset: 13 },
+  { name: "Raspotočje", offset: 15 },
+  { name: "Poljice", offset: 17 },
+  { name: "Rudnik", offset: 18 },
+  { name: "Zelenilo", offset: 19 },
+  { name: "Odmut KT", offset: 17 },
+  { name: "Odmut", offset: 20 },
+  { name: "Dom Armije BiH", offset: 22 },
+  { name: "Lovački Dom", offset: 23 },
+  { name: "Carina R", offset: 24 },
+  { name: "Općina", offset: 27 },
+  { name: "Stadion", offset: 29 },
+  { name: "Autobusni Kolodvor", offset: 33 }
             ]
             ),
           sunday: createDepartures(
             ["05:15", "07:20", "11:20", "15:20", "19:20", "21:20", "23:20"],
             [
-              {name: "Bolnica", offset: 0},
-              {name: "Babina Rijeka", offset: 3},
-              {name: "Komplex A", offset: 5},
-              {name: "Garnizon", offset: 8},
-              {name: "Novi Most", offset: 10},
-              {name: "Džamija", offset: 12},
-              {name: "Stara Pijaca", offset: 14},
-              {name: "Hotel Metalurg", offset: 16},
-              {name: "Pehare", offset: 22},
-              {name: "Ričice (Bremina)", offset: 23},
-              {name: "Sviće", offset: 25}
+              { name: "Janjići", offset: 0 },
+  { name: "Janjići (prodavnica)", offset: 2 },
+  { name: "Janjići (škola)", offset: 4 },
+  { name: "Metalno", offset: 6 },
+  { name: "Komercijala", offset: 7 },
+  { name: "Bare", offset: 9 },
+  { name: "Drivuša KT", offset: 11 },
+  { name: "Mišurin Do", offset: 13 },
+  { name: "Raspotočje", offset: 15 },
+  { name: "Poljice", offset: 17 },
+  { name: "Rudnik", offset: 18 },
+  { name: "Zelenilo", offset: 19 },
+  { name: "Odmut KT", offset: 17 },
+  { name: "Odmut", offset: 20 },
+  { name: "Dom Armije BiH", offset: 22 },
+  { name: "Lovački Dom", offset: 23 },
+  { name: "Carina R", offset: 24 },
+  { name: "Općina", offset: 27 },
+  { name: "Stadion", offset: 29 },
+  { name: "Autobusni Kolodvor", offset: 33 }
             ]
           )
       }
@@ -535,7 +644,7 @@ const LINES = [
         to: "Bolnica",
         departures: {
           workdays: createDepartures(
-            ["06:30", "07:30", "08:30", "09:30", "10:30", "11:30", "13:30", "14:30", "15:30"],
+            ["06:50", "07:50", "08:50", "09:50", "10:50", "11:50", "12:50", "13:50", "14:50"],
             [
               {name: "Ričice (Bremina)", offset: 0},
               {name: "Pehare", offset: 3},
@@ -559,7 +668,7 @@ const LINES = [
         to: "Ričice",
         departures: {
           workdays: createDepartures(
-            ["06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00"],
+            ["06:20", "07:20", "08:20", "09:20", "10:20", "11:20", "12:20", "13:20", "14:20"],
             [
               {name: "Bolnica", offset: 0},
               {name: "Babina Rijeka", offset: 3},
@@ -593,7 +702,7 @@ const LINES = [
         to: "Klopče",
         departures: {
           workdays: createDepartures(
-            ["05:20", "06:05","06:45","07:40", "09:30", "11:10", "12:30", "13:25", "14:30", "15:30", "16:25", "17:40", "18:40", "19:40", "21:40","23:40"],
+            ["05:20", "06:05","07:40", "09:30", "11:10", "12:30", "13:25", "14:30", "15:40", "17:40", "18:40", "19:40", "21:30","23:40"],
             [
               {name: "Autobusni Kolodvor", offset: 0},
               {name: "Hotel Metalurg", offset: 3},
@@ -607,7 +716,7 @@ const LINES = [
             ]
           ),
           saturday: createDepartures(
-            ["05:20", "06:05","07:40", "09:30", "11:10", "12:30", "13:25", "15:30", "17:40", "19:40", "21:30","23:40"],
+            ["05:20", "06:05","07:40", "09:30", "11:10", "12:30", "13:25", "14:30", "15:40", "17:40", "18:40", "19:40", "21:30","23:40"],
             [
               {name: "Autobusni Kolodvor", offset: 0},
               {name: "Hotel Metalurg", offset: 3},
@@ -621,7 +730,7 @@ const LINES = [
             ]
           ),
           sunday: createDepartures(
-            ["05:20", "06:05","07:40", "09:30", "11:10", "12:30", "13:25", "15:30", "17:40", "19:40", "21:30","23:40"],
+            ["06:05","07:40", "09:30", "11:10", "12:30", "13:25", "14:30", "15:40", "17:40", "19:40", "21:30","23:40"],
             [
               {name: "Autobusni Kolodvor", offset: 0},
               {name: "Hotel Metalurg", offset: 3},
@@ -642,7 +751,7 @@ const LINES = [
         to: "Autobusni Kolodvor",
         departures: {
           workdays: createDepartures(
-            ["05:45", "06:25", "07:05", "08:20","10:00","11:40","13:00", "13:50", "15:00", "15:50", "16:50", "18:05", "19:05", "20:05","21:55","00:05"],
+            ["05:45", "06:25", "08:05","10:00","11:40","13:00", "13:50", "15:00", "16:05", "18:05", "19:05", "20:05","21:55","00:05"],
             [
               {name: "Klopče", offset: 0},
               {name: "Klopče B", offset: 5},
@@ -656,7 +765,7 @@ const LINES = [
             ]
           ),
           saturday: createDepartures(
-            ["05:45", "06:25", "08:20","10:00","11:40","13:00", "13:50","15:50","18:05","20:05","21:55","00:05"],
+            ["05:45", "06:25", "08:05","10:00","11:40","13:00", "13:50", "15:00", "16:05", "18:05", "19:05", "20:05","21:55","00:05"],
             [
               {name: "Klopče", offset: 0},
               {name: "Klopče B", offset: 5},
@@ -670,7 +779,7 @@ const LINES = [
             ]
           ),
           sunday: createDepartures(
-            ["05:45", "06:25", "08:20","10:00","11:40","13:00", "13:50","15:50","18:05","20:05","21:55","00:05"],
+            ["05:45", "06:25", "08:05","10:00","11:40","13:00", "13:50", "15:00", "16:05", "18:05", "20:05","21:55"],
             [
               {name: "Klopče", offset: 0},
               {name: "Klopče B", offset: 5},
@@ -817,48 +926,79 @@ const LINES = [
         to: "Banlozi",
         departures: {
           workdays: createDepartures(
-            ["05:20","06:20","07:30","09:00","11:10","12:20","13:40","15:40","17:30","18:30","19:30","22:00","23:30"],
+            ["05:20","06:20","07:30","09:15","11:10","12:20","13:30","15:40","17:30","18:30","19:30","22:00","23:30"],
             [
               {name: "Autobusni Kolodvor", offset: 0},
-              {name: "Hotel Metalurg", offset: 2},
-              {name: "Stara Pijaca", offset: 4},
-              {name: "Džamija", offset: 6},
-              {name: "Novi Most", offset: 8},
-              {name: "Garnizon", offset: 10},
-              {name: "Otpad", offset: 12},
-              {name: "DC ZPP", offset: 13},
-              {name: "Babina 2", offset: 14},
-              {name: "Lukovo Polje", offset: 16}
+              {name: "Stadion", offset: 3},
+              {name: "Općina", offset: 5},
+              {name: "Carina R", offset: 6},
+              {name: "Vjetrenice R", offset: 7},
+              {name: "Brist", offset: 9},
+              {name: "Podbrežje", offset: 10},
+              {name: "Trokuće", offset: 12},
+              {name: "Tetovo (Stara škola)", offset: 13},
+              {name: "Gradište R", offset: 14},
+              {name: "Tetovo (Nova škola)", offset: 15},
+              {name: "Tetovo", offset: 19},
+              {name: "Trafo stanica", offset: 22},
+              {name: "Banlozi", offset: 27},
             ]
           ),
           saturday: createDepartures(
-            ["05:45", "06:30", "07:10", "09:00", "10:10", "11:00", "12:40", "13:40", "15:30", "16:10", "17:00", "18:40", "19:40", "21:40"],
+            ["05:20","06:20","07:30","09:15","11:10","12:20","13:30","15:40","17:30","18:30","19:30","22:00","23:30"],
             [
               {name: "Autobusni Kolodvor", offset: 0},
-              {name: "Hotel Metalurg", offset: 2},
-              {name: "Stara Pijaca", offset: 4},
-              {name: "Džamija", offset: 6},
-              {name: "Novi Most", offset: 8},
-              {name: "Garnizon", offset: 10},
-              {name: "Otpad", offset: 12},
-              {name: "DC ZPP", offset: 13},
-              {name: "Babina 2", offset: 14},
-              {name: "Lukovo Polje", offset: 16}
+              {name: "Stadion", offset: 3},
+              {name: "Općina", offset: 5},
+              {name: "Carina R", offset: 6},
+              {name: "Vjetrenice R", offset: 7},
+              {name: "Brist", offset: 9},
+              {name: "Podbrežje", offset: 10},
+              {name: "Trokuće", offset: 12},
+              {name: "Tetovo (Stara škola)", offset: 13},
+              {name: "Gradište R", offset: 14},
+              {name: "Tetovo (Nova škola)", offset: 15},
+              {name: "Tetovo", offset: 19},
+              {name: "Trafo stanica", offset: 22},
+              {name: "Banlozi", offset: 27},
+            ]
+          ),
+          saturday: createDepartures(
+            ["05:20","06:20","07:30","09:15","11:10","12:20","13:30","15:40","17:30","18:30","19:30","22:00","23:30"],
+            [
+              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Stadion", offset: 3},
+              {name: "Općina", offset: 5},
+              {name: "Carina R", offset: 6},
+              {name: "Vjetrenice R", offset: 7},
+              {name: "Brist", offset: 9},
+              {name: "Podbrežje", offset: 10},
+              {name: "Trokuće", offset: 12},
+              {name: "Tetovo (Stara škola)", offset: 13},
+              {name: "Gradište R", offset: 14},
+              {name: "Tetovo (Nova škola)", offset: 15},
+              {name: "Tetovo", offset: 19},
+              {name: "Trafo stanica", offset: 22},
+              {name: "Banlozi", offset: 27},
             ]
           ),
           sunday: createDepartures(
-            ["05:20", "07:30", "09:00", "11:10", "13:40", "15:40", "17:30", "19:30","22:00","23:30"],
+            ["05:20","07:30","09:15","11:10","12:20","13:30","15:40","17:30","18:30","19:30","22:00","23:30"],
             [
               {name: "Autobusni Kolodvor", offset: 0},
-              {name: "Hotel Metalurg", offset: 2},
-              {name: "Stara Pijaca", offset: 4},
-              {name: "Džamija", offset: 6},
-              {name: "Novi Most", offset: 8},
-              {name: "Garnizon", offset: 10},
-              {name: "Otpad", offset: 12},
-              {name: "DC ZPP", offset: 13},
-              {name: "Babina 2", offset: 14},
-              {name: "Lukovo Polje", offset: 16}
+              {name: "Stadion", offset: 3},
+              {name: "Općina", offset: 5},
+              {name: "Carina R", offset: 6},
+              {name: "Vjetrenice R", offset: 7},
+              {name: "Brist", offset: 9},
+              {name: "Podbrežje", offset: 10},
+              {name: "Trokuće", offset: 12},
+              {name: "Tetovo (Stara škola)", offset: 13},
+              {name: "Gradište R", offset: 14},
+              {name: "Tetovo (Nova škola)", offset: 15},
+              {name: "Tetovo", offset: 19},
+              {name: "Trafo stanica", offset: 22},
+              {name: "Banlozi", offset: 27},
             ]
           )
         }
@@ -869,48 +1009,60 @@ const LINES = [
         to: "Autobusni Kolodvor",
         departures: {
           workdays: createDepartures(
-            ["05:45", "06:50", "08:00", "09:45", "11:40", "12:55", "14:10", "16:10", "18:00", "19:30", "20:00", "22:30", "00:05"],
+            ["05:50", "06:50", "08:00", "09:45", "11:40", "12:55", "14:00", "16:10", "18:00", "19:00", "20:00", "22:30", "00:00"],
             [
-              {name: "Lukovo Polje", offset: 0},
-              {name: "Babina 2", offset: 2},
-              {name: "DC ZPP", offset: 3},
-              {name: "Otpad", offset: 4},
-              {name: "Garnizon", offset: 6},
-              {name: "Novi Most", offset: 8},
-              {name: "Džamija", offset: 10},
-              {name: "Stara Pijaca", offset: 12},
-              {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+              { name: "Banlozi", offset: 0 },
+  { name: "Trafo stanica", offset: 5 },
+  { name: "Tetovo", offset: 8 },
+  { name: "Tetovo (Nova škola)", offset: 12 },
+  { name: "Gradište R", offset: 13 },
+  { name: "Tetovo (Stara škola)", offset: 14 },
+  { name: "Trokuće", offset: 15 },
+  { name: "Podbrežje", offset: 17 },
+  { name: "Brist", offset: 18 },
+  { name: "Vjetrenice R", offset: 20 },
+  { name: "Carina R", offset: 21 },
+  { name: "Općina", offset: 22 },
+  { name: "Stadion", offset: 24 },
+  { name: "Autobusni Kolodvor", offset: 27 }
             ]
           ),
           saturday: createDepartures(
-            ["05:45", "06:50", "08:00", "09:45", "11:40", "12:55", "14:10", "16:10", "18:00", "19:30", "20:00", "22:30", "00:05"],
+            ["05:50", "06:50", "08:00", "09:45", "11:40", "12:55", "14:00", "16:10", "18:00", "19:00", "20:00", "22:30", "00:00"],
             [
-              {name: "Lukovo Polje", offset: 0},
-              {name: "Babina 2", offset: 2},
-              {name: "DC ZPP", offset: 3},
-              {name: "Otpad", offset: 4},
-              {name: "Garnizon", offset: 6},
-              {name: "Novi Most", offset: 8},
-              {name: "Džamija", offset: 10},
-              {name: "Stara Pijaca", offset: 12},
-              {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+                            { name: "Banlozi", offset: 0 },
+  { name: "Trafo stanica", offset: 5 },
+  { name: "Tetovo", offset: 8 },
+  { name: "Tetovo (Nova škola)", offset: 12 },
+  { name: "Gradište R", offset: 13 },
+  { name: "Tetovo (Stara škola)", offset: 14 },
+  { name: "Trokuće", offset: 15 },
+  { name: "Podbrežje", offset: 17 },
+  { name: "Brist", offset: 18 },
+  { name: "Vjetrenice R", offset: 20 },
+  { name: "Carina R", offset: 21 },
+  { name: "Općina", offset: 22 },
+  { name: "Stadion", offset: 24 },
+  { name: "Autobusni Kolodvor", offset: 27 }
             ]
           ),
           sunday: createDepartures(
-            ["05:45","08:00","09:45","11:40","14:10","16:10","18:00","20:00","22:30","00:05"],
+            ["05:50", "08:00", "09:45", "11:40", "12:55", "14:00", "16:10", "18:00", "19:00", "20:00", "22:30", "00:00"],
             [
-              {name: "Lukovo Polje", offset: 0},
-              {name: "Babina 2", offset: 2},
-              {name: "DC ZPP", offset: 3},
-              {name: "Otpad", offset: 4},
-              {name: "Garnizon", offset: 6},
-              {name: "Novi Most", offset: 8},
-              {name: "Džamija", offset: 10},
-              {name: "Stara Pijaca", offset: 12},
-              {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+                            { name: "Banlozi", offset: 0 },
+  { name: "Trafo stanica", offset: 5 },
+  { name: "Tetovo", offset: 8 },
+  { name: "Tetovo (Nova škola)", offset: 12 },
+  { name: "Gradište R", offset: 13 },
+  { name: "Tetovo (Stara škola)", offset: 14 },
+  { name: "Trokuće", offset: 15 },
+  { name: "Podbrežje", offset: 17 },
+  { name: "Brist", offset: 18 },
+  { name: "Vjetrenice R", offset: 20 },
+  { name: "Carina R", offset: 21 },
+  { name: "Općina", offset: 22 },
+  { name: "Stadion", offset: 24 },
+  { name: "Autobusni Kolodvor", offset: 27 }
             ]
           )
         }

@@ -16,17 +16,6 @@ const OBAVIJESTI = [
     showTime: false,
     showLine: true
   },
-  {
-    id: 2,
-    title: "Gdje mi je bus?",
-    content: "Vremena polazaka na usputnim stanicama su okvirna i informativnog karaktera. Zbog stanja u prometu, bus <em>može</em> stići <strong>±3 minute</strong> u odnosu na upisani termin. <br><br><strong>Preporuka</strong>: Dođi na stanicu malo ranije kako bi tvoje putovanje bilo sigurno!",
-    timestamp: "2026-02-25T08:00:00Z",
-    expiresInDays: 10000,
-    lineColor: "#ffb20d",
-    showTitle: true,
-    showTime: false,
-    showLine: true
-  },
     {
     id: 3,
     title: "Dodaj <strong>napokon!</strong> na tvoj zaslon!",

@@ -24,6 +24,15 @@
 </head>
 <body>
 
+  <div id="splash-screen">
+    <div class="splash-content">
+      <div class="splash-logo">napokon<span class="splash-exclaim">!</span></div>
+      <div class="splash-loader">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
   <div class="top-bar" id="main-header">
     <div class="top-nav">
       <span id="header-title">početna!</span>
@@ -87,7 +96,8 @@
 
             <h3 class="section-title" style="margin-top: 10px;">IZVORI</h3>
              <p style="color: #8E8E93; padding: 0 16px; font-size: 14px; line-height: 1.5;">
-        Kako bi bili što transparentniji, ovdje možete provjeriti izvore koje smo koristili za snadbjevanje informacija.
+        Kako bi bili što transparentniji, ovdje možete provjeriti izvore koje smo koristili za snadbjevanje informacija.<br><br>
+        Napomena: Stajališta i vremena na kojima staje autobus su izvučene iz Tabelarnog pregleda redova vožnje Grada Zenice, dok su redovi vožnje izvučeni sa stranice prijevoznika BISS-TOURS. Iako su podaci točno upisani iz provjerenih izvora, moguća su odstupanja.
       </p><br>
       <div class="line-item" onclick="window.open('https://zenica.ba/wp-content/uploads/2024/06/TABELARNI-PREGLED-REGISTRA-REDOVA-VOZNJE.pdf', '_blank')">
         <div class="line-number" style="background: transparent; font-size: 24px;">🚍</div>
@@ -101,13 +111,14 @@
       <h3 class="section-title" style="margin-top: 10px;">O PLATFORMI</h3>
       <div class="line-item" onclick="window.location.href='mailto:markoopacak08@gmail.com'">
         <div class="line-number" style="background: transparent; font-size: 24px;">✉️</div>
-        <span>Prijavi grešku (Email)</span>
+        <span>Imaš prijedlog, problem ili pitanje? (napokonapp@gmail.com)</span>
       </div>
 
       <h3 class="section-title" style="margin-top: 30px;">SISTEM</h3>
       <p style="color: #8E8E93; padding: 0 16px; font-size: 14px; line-height: 1.5;">
         <strong>napokon! v1.0 (Beta)</strong><br>
-        Razvijeno u Zenici, kreirao Marko Opačak. Podaci su informativnog karaktera i mogu odstupati zbog stanja u saobraćaju.
+        Razvijeno u Zenici, kreirao Marko Opačak. Podaci su informativnog karaktera i mogu odstupati zbog stanja u saobraćaju.<br>
+        Podaci o redu vožnje provjereni: <strong id="data-updated-date">-</strong>
       </p>
     </div>
   </div>
