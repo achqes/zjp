@@ -363,7 +363,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .section-title {
   z-index: 1;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 3s ease;
+  transition: opacity 1s ease;
 }
 
 .screen.active {
@@ -891,7 +891,7 @@ a.line-item {
 
 .home-tab-content.active {
   display: block;
-  animation: homeTabFadeIn 1s ease;
+  animation: homeTabFadeIn 0.33s ease;
 }
 
 @keyframes homeTabFadeIn {
