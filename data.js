@@ -378,13 +378,13 @@ const LINES = [
               {name: "Hotel Metalurg", offset: 15},
               {name: "Autobusni Kolodvor", offset: 20},
               {name: "Nova Zenica", offset: 23},
-              {name: "Preporod", offset: 25}
-              {name: "Brana 2", offset: 27}
-              {name: "Pehare (Sviće)", offset: 28}
-              {name: "Ričice (Džamija)", offset: 30}
+              {name: "Preporod", offset: 25},
+              {name: "Brana 2", offset: 27},
+              {name: "Pehare (Sviće)", offset: 28},
+              {name: "Ričice (Džamija)", offset: 30},
               {name: "Luke", offset: 33},
               {name: "Zagrmice", offset: 34},
-              {name: "Sviće", offset: 35}
+              {name: "Sviće", offset: 35},
             ]
             ),
           sunday: createDepartures(
@@ -402,13 +402,13 @@ const LINES = [
               {name: "Hotel Metalurg", offset: 15},
               {name: "Autobusni Kolodvor", offset: 20},
               {name: "Nova Zenica", offset: 23},
-              {name: "Preporod", offset: 25}
-              {name: "Brana 2", offset: 27}
-              {name: "Pehare (Sviće)", offset: 28}
-              {name: "Ričice (Džamija)", offset: 30}
+              {name: "Preporod", offset: 25},
+              {name: "Brana 2", offset: 27},
+              {name: "Pehare (Sviće)", offset: 28},
+              {name: "Ričice (Džamija)", offset: 30},
               {name: "Luke", offset: 33},
               {name: "Zagrmice", offset: 34},
-              {name: "Sviće", offset: 35}
+              {name: "Sviće", offset: 35},
             ]
           )
       }
@@ -440,7 +440,7 @@ const LINES = [
 {name: "Komplex A", offset: 5},
 {name: "Babina Rijeka", offset: 3},
 {name: "Paviljon", offset: 2},
-{name: "Bolnica", offset: 0}
+{name: "Bolnica", offset: 0},
             ]
             ),
           sunday: createDepartures(
