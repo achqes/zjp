@@ -161,6 +161,53 @@ function openLineFromHome(lineId) {
 }
 
 // =======================
+// SWIPE IZMEĐU OBAVIJESTI / OMILJENE (na početnoj)
+// =======================
+function switchHomeTab(targetTab) {
+  const btn = document.querySelector(`.home-segment-btn[data-tab="${targetTab}"]`);
+  if (btn) btn.click();
+}
+
+(function initHomeSwipe() {
+  const homeContent = document.querySelector('#screen-home .content');
+  if (!homeContent) return;
+
+  let homeSwipeStartX = 0;
+  let homeSwipeStartY = 0;
+  let homeSwipeActive = false;
+
+  homeContent.addEventListener('touchstart', (e) => {
+    homeSwipeStartX = e.touches[0].clientX;
+    homeSwipeStartY = e.touches[0].clientY;
+    homeSwipeActive = true;
+  }, { passive: true });
+
+  homeContent.addEventListener('touchend', (e) => {
+    if (!homeSwipeActive) return;
+    homeSwipeActive = false;
+
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const deltaX = endX - homeSwipeStartX;
+    const deltaY = Math.abs(endY - homeSwipeStartY);
+
+    // Mora biti horizontalan swipe (ne vertikalni scroll liste)
+    if (Math.abs(deltaX) > 60 && deltaY < 60) {
+      const activeBtn = document.querySelector('.home-segment-btn.active');
+      const currentTab = activeBtn ? activeBtn.dataset.tab : 'notifications';
+
+      if (deltaX < 0 && currentTab === 'notifications') {
+        // Swipe ulijevo -> Omiljene
+        switchHomeTab('favorites');
+      } else if (deltaX > 0 && currentTab === 'favorites') {
+        // Swipe udesno -> Obavijesti
+        switchHomeTab('notifications');
+      }
+    }
+  }, { passive: true });
+})();
+
+// =======================
 // SWIPE TO BACK
 // =======================
 let touchStartX = 0;
@@ -490,7 +537,7 @@ function renderNoServiceState() {
         <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" fill="currentColor"/>
       </svg>
       <div>
-        <p style="font-size: 17px; font-weight: 600; color: #6E6E73; margin: 0 0 8px 0;">Ova linija danas ne prometuje.</p>
+        <p style="font-size: 17px; font-weight: 600; color: #1C1C1E; margin: 0 0 8px 0;">Ova linija danas ne prometuje.</p>
         <p style="font-size: 14px; color: #8E8E93; margin: 0; line-height: 1.5;">Izaberi drugi dan da vidiš kad prometuje.</p>
       </div>
     </div>
@@ -544,24 +591,6 @@ function renderDepartures() {
 
     card.onclick = () => openTrip(departure);
     list.appendChild(card);
-  });
-
-  scrollToCurrentDeparture(list);
-}
-
-// =======================
-// AUTO-SCROLL NA TRENUTNO/SLJEDECE VRIJEME
-// =======================
-function scrollToCurrentDeparture(list) {
-  const isToday = selectedDate.toDateString() === new Date().toDateString();
-  if (!isToday) return;
-
-  // Prvo probaj naci "active" (trenutni) polazak, pa prvi "future" (sljedeci)
-  let target = list.querySelector('.departure-card.active') || list.querySelector('.departure-card.future');
-  if (!target) return;
-
-  requestAnimationFrame(() => {
-    target.scrollIntoView({ behavior: 'auto', block: 'center' });
   });
 }
 
@@ -698,79 +727,17 @@ document.getElementById("back-to-line-detail").onclick = () => {
 };
 
 // =======================
-// SEARCH (tolerantno samo na dijakritike: č/ć/š/ž/đ)
+// SEARCH
 // =======================
-function normalizeText(str) {
-  return str
-    .toLowerCase()
-    .replace(/đ/g, 'dj')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, ''); // skida akcente: č/ć→c, š→s, ž→z
-}
-
-// Obicna substring provjera nad normalizovanim tekstom (bez tolerancije na tipfelere)
-function fuzzyContains(text, query) {
-  if (query.length === 0) return true;
-  return text.includes(query);
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function renderSearchEmptyState(show, query) {
-  const container = document.getElementById('lines-list');
-  let emptyEl = document.getElementById('search-empty-state');
-
-  if (!show) {
-    if (emptyEl) emptyEl.remove();
-    return;
-  }
-
-  if (!emptyEl) {
-    emptyEl = document.createElement('div');
-    emptyEl.id = 'search-empty-state';
-    emptyEl.className = 'search-empty-state';
-    container.appendChild(emptyEl);
-  }
-
-  emptyEl.innerHTML = `
-    <h3>Linija koju tražiš (još) nije dostupna.</h3>
-    Tvoju liniju ne možemo pronaći, ali možeš nam se javiti da je dodamo!
-  `;
-}
-
 document.getElementById("search-input").addEventListener("input", (e) => {
-  const rawQuery = e.target.value.trim();
-  const query = normalizeText(rawQuery);
-  // Ogranicavamo pretragu SAMO na listu linija (raspored tab), da ne diramo
-  // .line-item elemente na Info ekranu (linkovi, izvori itd.)
-  const items = document.querySelectorAll("#lines-list .line-item");
-  let visibleCount = 0;
+  const query = e.target.value.toLowerCase();
+  const items = document.querySelectorAll(".line-item");
 
   items.forEach(item => {
-    const text = normalizeText(item.textContent);
-    const matches = fuzzyContains(text, query);
-    item.style.display = matches ? "flex" : "none";
-    if (matches) visibleCount++;
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(query) ? "flex" : "none";
   });
-
-  renderSearchEmptyState(query.length > 0 && visibleCount === 0, rawQuery);
 });
-
-// Vraca pretragu u pocetno stanje (prazan input, sve linije vidljive, bez 404 poruke)
-function resetLinesSearch() {
-  const searchInput = document.getElementById('search-input');
-  if (searchInput) searchInput.value = '';
-
-  document.querySelectorAll('#lines-list .line-item').forEach(item => {
-    item.style.display = 'flex';
-  });
-
-  renderSearchEmptyState(false, '');
-}
 
 // =======================
 // BOTTOM NAV TAB SWITCHING
@@ -780,11 +747,6 @@ function switchToTab(tab) {
 
   if (currentScreen === 'screen-line-detail' || currentScreen === 'screen-trip') {
     return;
-  }
-
-  // Kad se izlazi iz Raspored taba, resetuj pretragu
-  if (tab !== 'lines') {
-    resetLinesSearch();
   }
 
   localStorage.setItem('lastActiveTab', tab);
@@ -845,54 +807,10 @@ function restoreState() {
 }
 
 // =======================
-// SPLASH SCREEN
-// =======================
-function hideSplashScreen() {
-  const splash = document.getElementById('splash-screen');
-  if (!splash) return;
-  splash.classList.add('hidden');
-  setTimeout(() => splash.remove(), 500);
-}
-
-// =======================
-// INFO SCREEN — DATUM AZURIRANJA
-// =======================
-function renderDataUpdatedDate() {
-  const el = document.getElementById('data-updated-date');
-  if (el && typeof DATA_LAST_UPDATED !== 'undefined') {
-    el.textContent = DATA_LAST_UPDATED;
-  }
-}
-
-// =======================
-// OFFLINE MODE (samo kad je app dodana na pocetni zaslon)
-// =======================
-function isRunningAsInstalledApp() {
-  const isStandaloneDisplay = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-  const isIOSStandalone = window.navigator.standalone === true; // iOS Safari "Add to Home Screen"
-  return isStandaloneDisplay || isIOSStandalone;
-}
-
-function registerOfflineSupport() {
-  if (!('serviceWorker' in navigator)) return;
-
-  if (isRunningAsInstalledApp()) {
-    navigator.serviceWorker.register('/sw.js').catch(err => {
-      console.warn('Service worker registration failed:', err);
-    });
-  }
-}
-
-// =======================
 // INITIALIZATION
 // =======================
 document.addEventListener('DOMContentLoaded', () => {
   initHomeScreen();
   renderLines();
   restoreState();
-  renderDataUpdatedDate();
-  registerOfflineSupport();
-
-  // Splash screen — sakrij cim je app spremna za koristenje
-  setTimeout(hideSplashScreen, 600);
 });
