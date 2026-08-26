@@ -50,7 +50,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .section-title {
   border-radius: 0 0 18px 18px;
   z-index: 100;
   /* env(safe-area-inset-top) gura sadržaj ispod notch-a/status bara, dok pozadina i dalje ide skroz do vrha */
-  padding: calc(50px + env(safe-area-inset-top)) 7.5px 20px;
+  padding: calc(35px + env(safe-area-inset-top)) 7.5px 20px;
   max-width: 428px;
   margin: 0 auto;
   transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -134,7 +134,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .section-title {
 }
 
 .content.with-header {
-  padding-top: 130px !important; /* Ovo je mjera da naslov stoji odmah ispod headera */
+  padding-top: 110px !important; /* Ovo je mjera da naslov stoji odmah ispod headera */
   padding-bottom: 100px !important;
 }
 
