@@ -3,9 +3,15 @@
 <head>
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>napokon!</title>
-  
+
+  <!-- Boja statusnog bara / notch područja - narandžasta, ista kao top-bar -->
+  <meta name="theme-color" content="#ffb20d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-ikonica.png">
   <link rel="manifest" href="/site.webmanifest">
   <script async src="https://www.googletagmanager.com/gtag/js?id=Tvoj-GA-ID-Ovdje"></script>
@@ -23,15 +29,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <div id="splash-screen">
-    <div class="splash-content">
-      <div class="splash-logo">napokon<span class="splash-exclaim">!</span></div>
-      <div class="splash-loader">
-        <span></span><span></span><span></span>
-      </div>
-    </div>
-  </div>
 
   <div class="top-bar" id="main-header">
     <div class="top-nav">
@@ -89,36 +86,46 @@
 
             <h3 class="section-title" style="margin-top: 10px;">PRIJEVOZNICI</h3>
       
-      <div class="line-item" onclick="window.open('https://www.biss-tours.ba/', '_blank')">
+      <a class="line-item" href="https://www.biss-tours.ba/" target="_blank" rel="noopener">
         <div class="line-number" style="background: transparent; font-size: 24px;">🌐</div>
         <span>Zvanični sajt BISS-TOURS</span>
-      </div>
+      </a>
 
             <h3 class="section-title" style="margin-top: 10px;">IZVORI</h3>
              <p style="color: #8E8E93; padding: 0 16px; font-size: 14px; line-height: 1.5;">
-        Kako bi bili što transparentniji, ovdje možete provjeriti izvore koje smo koristili za snadbjevanje informacija.<br><br>
-        Napomena: Stajališta i vremena na kojima staje autobus su izvučene iz Tabelarnog pregleda redova vožnje Grada Zenice, dok su redovi vožnje izvučeni sa stranice prijevoznika BISS-TOURS. Iako su podaci točno upisani iz provjerenih izvora, moguća su odstupanja.
+        Kako bi bili što transparentniji, ovdje možete provjeriti izvore koje smo koristili za snadbjevanje informacija.
       </p><br>
-      <div class="line-item" onclick="window.open('https://zenica.ba/wp-content/uploads/2024/06/TABELARNI-PREGLED-REGISTRA-REDOVA-VOZNJE.pdf', '_blank')">
+      <a class="line-item" href="https://zenica.ba/wp-content/uploads/2024/06/TABELARNI-PREGLED-REGISTRA-REDOVA-VOZNJE.pdf" target="_blank" rel="noopener">
         <div class="line-number" style="background: transparent; font-size: 24px;">🚍</div>
         <span>Tabelarni pregled redova vožnje od Grada Zenice</span>
-      </div>
-            <div class="line-item" onclick="window.open('https://zdk.ba/images/attachments/DaljinarZiZminimalnaZvremenaZvoznjeZnaZpodrucjuZZDK.pdf', '_blank')">
+      </a>
+            <a class="line-item" href="https://zdk.ba/images/attachments/DaljinarZiZminimalnaZvremenaZvoznjeZnaZpodrucjuZZDK.pdf" target="_blank" rel="noopener">
         <div class="line-number" style="background: transparent; font-size: 24px;">🚏</div>
         <span>Daljinar i minimalna vremena vožnje na području ZDK</span>
-      </div>
+      </a>
 
       <h3 class="section-title" style="margin-top: 10px;">O PLATFORMI</h3>
-      <div class="line-item" onclick="window.location.href='mailto:markoopacak08@gmail.com'">
+      <a class="line-item" href="mailto:markoopacak08@gmail.com">
         <div class="line-number" style="background: transparent; font-size: 24px;">✉️</div>
-        <span>Imaš prijedlog, problem ili pitanje? (napokonapp@gmail.com)</span>
-      </div>
+        <span>Prijavi grešku (Email)</span>
+      </a>
+
+      <h3 class="section-title" style="margin-top: 10px;">PRAVNO</h3>
+      <!-- PLACEHOLDER: zamijeni href="https://" ispod sa svojim stvarnim Privacy Policy linkom (npr. Notion / Flycricket) -->
+      <a class="line-item" href="https://" target="_blank" rel="noopener">
+        <div class="line-number" style="background: transparent; font-size: 24px;">🔒</div>
+        <span>Privacy Policy</span>
+      </a>
+      <!-- PLACEHOLDER: zamijeni href="https://" ispod sa svojim stvarnim Terms of Service linkom -->
+      <a class="line-item" href="https://" target="_blank" rel="noopener">
+        <div class="line-number" style="background: transparent; font-size: 24px;">📄</div>
+        <span>Terms of Service</span>
+      </a>
 
       <h3 class="section-title" style="margin-top: 30px;">SISTEM</h3>
       <p style="color: #8E8E93; padding: 0 16px; font-size: 14px; line-height: 1.5;">
         <strong>napokon! v1.0 (Beta)</strong><br>
-        Razvijeno u Zenici, kreirao Marko Opačak. Podaci su informativnog karaktera i mogu odstupati zbog stanja u saobraćaju.<br>
-        Podaci o redu vožnje provjereni: <strong id="data-updated-date">-</strong>
+        Razvijeno u Zenici, kreirao Marko Opačak. Podaci su informativnog karaktera i mogu odstupati zbog stanja u saobraćaju.
       </p>
     </div>
   </div>
