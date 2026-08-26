@@ -891,7 +891,7 @@ a.line-item {
 
 .home-tab-content.active {
   display: block;
-  animation: homeTabFadeIn 10s ease;
+  animation: homeTabFadeIn 1s ease;
 }
 
 @keyframes homeTabFadeIn {
