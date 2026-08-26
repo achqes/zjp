@@ -76,11 +76,6 @@ function renderFavorites() {
   if (favLines.length === 0) {
     container.innerHTML = `
       <div class="empty-favorites">
-        <svg viewBox="0 0 200 200" fill="none">
-          <circle cx="100" cy="100" r="80" fill="rgba(0, 122, 255, 0.1)"/>
-          <path d="M100 60 L120 90 L150 95 L125 118 L132 150 L100 133 L68 150 L75 118 L50 95 L80 90 Z" 
-                fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-        </svg>
         <h3>Još uvijek nemaš spremljenu <br>svoju omiljenu liniju?</h3>
         <p style="margin-top: 8px;">Omiljena je velika riječ, ali ozbiljno, ne propusti bus.</p>
       </div>
