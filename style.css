@@ -346,7 +346,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .section-title {
   display: none !important;
 }
 
-/* SCREENS - baza: brzi fade (koristi se za glavne tabove: početna / raspored / info) */
+/* SCREENS - baza: fade (koristi se za glavne tabove: početna / raspored / info) */
 .screen {
   position: fixed;
   top: 0;
@@ -363,25 +363,37 @@ h1, h2, h3, h4, h5, h6, .page-title, .section-title {
   z-index: 1;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  /* Blagi "grow in" efekat (skala 0.98 -> 1) uz fade, sa Apple-ovom standardnom krivuljom
+     (ista kriva koju iOS koristi za sheet/modal prezentacije) - izgleda mekše i prirodnije
+     od običnog linearnog fade-a */
+  transform: scale(0.98);
+  transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+              transform 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+              visibility 0s linear 0.32s;
+  will-change: opacity, transform;
 }
 
 .screen.active {
   z-index: 10;
   visibility: visible;
   opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+              transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* Screen-ovi koji se "otvaraju preko" prethodnog ekrana (detalji linije, detalji
-   polaska) - zadržavaju originalnu iOS push/slide-in animaciju zdesna */
+   polaska) - zadržavaju originalnu iOS push/slide-in animaciju zdesna, sada sa istom
+   "Apple" krivuljom kao gore radi dosljednosti */
 .screen.screen-push {
   transform: translateX(100%);
-  transition: transform 0.35s cubic-bezier(0.36, 0.66, 0.04, 1);
+  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .screen.screen-push.active {
   transform: translateX(0);
-  transition: transform 0.35s cubic-bezier(0.36, 0.66, 0.04, 1), opacity 0.3s ease;
+  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1),
+              opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* CONTENT PADDING */

@@ -3,7 +3,7 @@
 // a to se dešava SAMO kad je aplikacija otvorena kao instalirana (dodana na početni zaslon).
 // U običnom pregledniku (tab) se ovaj fajl nikad ne registruje, pa offline mod tamo ne radi.
 
-const CACHE_NAME = 'napokon-cache-v2';
+const CACHE_NAME = 'napokon-cache-v3';
 
 const APP_SHELL = [
   '/',
@@ -11,6 +11,7 @@ const APP_SHELL = [
   '/style.css',
   '/fonts.css',
   '/legal.css',
+  '/legal.js',
   '/app.js',
   '/data.js',
   '/obavijesti.js',

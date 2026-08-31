@@ -60,7 +60,7 @@ async function run() {
   console.log('Building production files into ./dist ...\n');
 
   console.log('JS (minify + obfuscate):');
-  for (const f of ['app.js', 'data.js', 'map.js', 'obavijesti.js']) {
+  for (const f of ['app.js', 'data.js', 'map.js', 'obavijesti.js', 'legal.js']) {
     await buildJS(f);
   }
 
