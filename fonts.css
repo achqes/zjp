@@ -1,0 +1,96 @@
+/* fonts.css
+   Lokalno (self-hosted) učitani fontovi.
+   Prije su se Inter / Montserrat / Roboto Mono učitavali sa Google Fonts servera
+   (fonts.googleapis.com / fonts.gstatic.com). Kada je aplikacija otvorena offline
+   (npr. instalirana PWA bez interneta), taj zahtjev ka Google-u ne uspije, pa se
+   browser/WKWebView vrati na sistemski font — izgled aplikacije se mijenja.
+
+   Sada su .woff2 fajlovi fontova sačuvani lokalno u /fonts folderu i keširani
+   Service Workerom (sw.js), tako da se font NIKAD ne mijenja, online ili offline. */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/inter-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/inter-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/inter-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('fonts/inter-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/montserrat-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/montserrat-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/montserrat-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('fonts/montserrat-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/roboto-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/roboto-mono-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/roboto-mono-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('fonts/roboto-mono-700.woff2') format('woff2');
+}

@@ -243,8 +243,28 @@ function getDayType(date) {
 // SHOW SCREEN
 // =======================
 function showScreen(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  const target = document.getElementById(id);
+  if (!target) return;
+
+  document.querySelectorAll(".screen").forEach(s => {
+    if (s !== target) s.classList.remove("active");
+  });
+
+  // VAŽNO za animacije na iPhoneu (kad je app upakovan preko Xcode-a u WKWebView):
+  // ako se "active" klasa doda u ISTOM sinhronom koraku u kojem smo je maloprije uklonili
+  // sa drugog ekrana, WebKit ponekad "preskoči" tranziciju i odmah iscrta krajnje stanje
+  // (bez fade/slide efekta) — u običnom Safari tabu to češće radi, ali unutar WKWebView-a ne.
+  // Rješenje: prvo maknemo "active" i s ciljnog ekrana, prisilno izazovemo reflow (void
+  // target.offsetHeight), pa tek u sljedećem animation frame-u dodamo "active" nazad —
+  // tako browser sigurno "vidi" početno stanje (opacity/translateX) prije nego krene tranzicija.
+  target.classList.remove("active");
+  void target.offsetHeight; // force reflow
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      target.classList.add("active");
+    });
+  });
+
   localStorage.setItem('currentScreen', id);
 
   const bHome = document.getElementById('back-to-home');
@@ -802,10 +822,39 @@ function restoreState() {
 }
 
 // =======================
+// MAILTO FALLBACK
+// =======================
+// Problem: kad je aplikacija upakovana u WKWebView (Xcode -> App Store), obični <a href="mailto:...">
+// linkovi se često ne otvore, jer wrapper mora eksplicitno presresti ne-http(s) šeme na native strani
+// (webView:decidePolicyForNavigationAction: -> UIApplication.shared.open(url)). To se ne može riješiti
+// samo iz web koda — ali kao rezervu, ako se mail app ne otvori u kratkom roku, kopiramo email adresu
+// u clipboard i kratko to javimo korisniku, tako da uvijek ima način da nas kontaktira.
+function initMailtoFallback(linkId, email) {
+  const link = document.getElementById(linkId);
+  if (!link) return;
+
+  link.addEventListener('click', () => {
+    let leftPage = false;
+    const onBlur = () => { leftPage = true; };
+    window.addEventListener('blur', onBlur, { once: true });
+
+    setTimeout(() => {
+      window.removeEventListener('blur', onBlur);
+      if (!leftPage && !document.hidden) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(email).catch(() => {});
+        }
+      }
+    }, 600);
+  });
+}
+
+// =======================
 // INITIALIZATION
 // =======================
 document.addEventListener('DOMContentLoaded', () => {
   initHomeScreen();
   renderLines();
   restoreState();
+  initMailtoFallback('info-mail-btn', 'markoopacak08@gmail.com');
 });

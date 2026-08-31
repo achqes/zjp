@@ -3,16 +3,33 @@
 // a to se dešava SAMO kad je aplikacija otvorena kao instalirana (dodana na početni zaslon).
 // U običnom pregledniku (tab) se ovaj fajl nikad ne registruje, pa offline mod tamo ne radi.
 
-const CACHE_NAME = 'napokon-cache-v1';
+const CACHE_NAME = 'napokon-cache-v2';
 
 const APP_SHELL = [
   '/',
   '/index.html',
   '/style.css',
+  '/fonts.css',
+  '/legal.css',
   '/app.js',
   '/data.js',
   '/obavijesti.js',
-  '/site.webmanifest'
+  '/site.webmanifest',
+  '/privacy.html',
+  '/terms.html',
+  '/support.html',
+  '/fonts/inter-400.woff2',
+  '/fonts/inter-500.woff2',
+  '/fonts/inter-600.woff2',
+  '/fonts/inter-700.woff2',
+  '/fonts/montserrat-400.woff2',
+  '/fonts/montserrat-500.woff2',
+  '/fonts/montserrat-600.woff2',
+  '/fonts/montserrat-700.woff2',
+  '/fonts/roboto-mono-400.woff2',
+  '/fonts/roboto-mono-500.woff2',
+  '/fonts/roboto-mono-600.woff2',
+  '/fonts/roboto-mono-700.woff2'
 ];
 
 // INSTALL — spremi osnovne fajlove aplikacije u cache

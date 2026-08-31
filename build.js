@@ -66,10 +66,26 @@ async function run() {
 
   console.log('\nCSS (minify):');
   buildCSS('style.css');
+  buildCSS('fonts.css');
+  buildCSS('legal.css');
 
   console.log('\nStatic files (copied as-is):');
-  for (const f of ['index.html', 'site.webmanifest', 'android192.png', 'android512.png', 'apple-ikonica.png', 'sw.js']) {
+  for (const f of [
+    'index.html', 'privacy.html', 'terms.html', 'support.html',
+    'site.webmanifest', 'android192.png', 'android512.png', 'apple-ikonica.png', 'sw.js'
+  ]) {
     if (fs.existsSync(path.join(SRC, f))) copyStatic(f);
+  }
+
+  console.log('\nFonts (copied as-is):');
+  const fontsDir = path.join(SRC, 'fonts');
+  if (fs.existsSync(fontsDir)) {
+    const outFontsDir = path.join(OUT, 'fonts');
+    if (!fs.existsSync(outFontsDir)) fs.mkdirSync(outFontsDir);
+    for (const f of fs.readdirSync(fontsDir)) {
+      fs.copyFileSync(path.join(fontsDir, f), path.join(outFontsDir, f));
+      console.log(`  ✓ fonts/${f} (copied)`);
+    }
   }
 
   console.log('\nDone. Deploy the contents of dist/ to Netlify.');

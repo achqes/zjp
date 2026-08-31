@@ -1,0 +1,117 @@
+/* legal.css — stil za Privacy Policy / Terms of Service / Podrška stranice */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #F2F2F5;
+  color: #1C1C1E;
+}
+
+body {
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+.legal-header {
+  background: #ffb20d;
+  border-radius: 0 0 18px 18px;
+  padding: calc(28px + env(safe-area-inset-top)) 20px 24px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.legal-header a.back-link {
+  display: inline-block;
+  color: #1C1C1E;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 14px;
+  opacity: 0.85;
+}
+
+.legal-header h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.6px;
+  color: #1C1C1E;
+}
+
+.legal-header p.updated {
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(28, 28, 30, 0.7);
+}
+
+.legal-content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.legal-content h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-top: 28px;
+  margin-bottom: 8px;
+  color: #1C1C1E;
+}
+
+.legal-content p, .legal-content li {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #3C3C43;
+  margin-bottom: 10px;
+}
+
+.legal-content ul {
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.legal-content a {
+  color: #db9500;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.legal-content a:hover,
+.legal-content a:active {
+  text-decoration: underline;
+}
+
+.legal-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.legal-card strong {
+  display: block;
+  font-size: 13px;
+  color: #8E8E93;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.legal-card span {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.legal-footer {
+  text-align: center;
+  font-size: 12px;
+  color: #8E8E93;
+  margin-top: 40px;
+  padding: 0 20px;
+}

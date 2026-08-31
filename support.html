@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Podrška — napokon!</title>
+<meta name="theme-color" content="#ffb20d">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="legal.css">
+<style>
+  .contact-btn {
+    display: block;
+    width: 100%;
+    background: #ffb20d;
+    color: #1C1C1E;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .contact-btn:active { opacity: 0.85; }
+  .copy-note {
+    font-size: 12px;
+    color: #8E8E93;
+    text-align: center;
+    margin-top: 10px;
+    min-height: 16px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="legal-header">
+    <a class="back-link" href="index.html">← Nazad na aplikaciju</a>
+    <h1>Podrška</h1>
+    <p class="updated">Tu smo da pomognemo</p>
+  </div>
+
+  <div class="legal-content">
+
+    <h2>Najčešća pitanja</h2>
+
+    <p><strong>Zašto vrijeme polaska koje vidim ne odgovara stvarnom?</strong><br>
+    Redovi vožnje se zasnivaju na zvaničnim izvorima, ali autobusi ponekad kasne ili krenu ranije zbog stanja u saobraćaju. Preporučujemo da na stanicu dođeš 5–10 minuta prije prikazanog vremena.</p>
+
+    <p><strong>Zašto aplikacija ne radi bez interneta?</strong><br>
+    Ako si aplikaciju instalirao na početni ekran (Dodaj na početni ekran / Add to Home Screen), radi i offline nakon prvog otvaranja — svi podaci i redovi vožnje se lokalno keširaju na tvom uređaju. Ako je koristiš direktno kroz browser (tab), offline mod nije dostupan.</p>
+
+    <p><strong>Kako da sačuvam omiljenu liniju?</strong><br>
+    Otvori liniju i pritisni zvjezdicu (☆) u gornjem desnom uglu ekrana — pojavit će se u tabu "Omiljene" na početnom ekranu.</p>
+
+    <p><strong>Pronašao sam grešku u redu vožnje ili bug u aplikaciji, šta da radim?</strong><br>
+    Javi nam se putem dugmeta ispod — pošalji nam broj linije, i kratak opis šta je pogrešno prikazano, i ispravit ćemo čim prije budemo mogli.</p>
+
+    <h2>Kontaktiraj nas</h2>
+    <div class="legal-card">
+      <strong>Email podrška</strong>
+      <span>markoopacak08@gmail.com</span>
+      <a class="contact-btn" href="mailto:markoopacak08@gmail.com?subject=napokon!%20-%20Podr%C5%A1ka" id="support-mail-btn">✉️ Pošalji email</a>
+      <div class="copy-note" id="copy-note"></div>
+    </div>
+
+    <p style="margin-top:20px;">Ako dugme iznad ne otvori tvoju mail aplikaciju (npr. na nekim uređajima koji nemaju podešenu default mail aplikaciju), adresa je već iskopirana za tebe — samo zalijepi (paste) u bilo koju email aplikaciju.</p>
+  </div>
+
+  <div class="legal-footer">napokon! — Razvijeno u Zenici, kreirao Marko Opačak.</div>
+
+<script>
+  // Robustan "mailto" fallback.
+  // Problem: kada je aplikacija upakovana u WKWebView (Xcode -> App Store), mailto: linkovi
+  // se ponekad ne otvaraju jer wrapper ne presreće ne-http(s) šeme (potrebna je izmjena na
+  // native/Swift strani: webView:decidePolicyForNavigationAction: -> UIApplication.shared.open(url)).
+  // Kao rezervu, ako se mail app ne otvori u kratkom roku, automatski kopiramo email adresu
+  // u clipboard i obavijestimo korisnika da je može zalijepiti ručno.
+  (function () {
+    const btn = document.getElementById('support-mail-btn');
+    const note = document.getElementById('copy-note');
+    const email = 'markoopacak08@gmail.com';
+
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      let leftPage = false;
+      const onBlur = () => { leftPage = true; };
+      window.addEventListener('blur', onBlur, { once: true });
+
+      setTimeout(function () {
+        window.removeEventListener('blur', onBlur);
+        // Ako se ništa nije otvorilo (fokus je i dalje na stranici), mailto vjerovatno nije
+        // podržan u ovom okruženju — ponudi kopiranje adrese kao fallback.
+        if (!leftPage && !document.hidden) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(email).then(function () {
+              note.textContent = 'Email adresa kopirana: ' + email;
+            }).catch(function () {
+              note.textContent = 'Kontaktiraj nas na: ' + email;
+            });
+          } else {
+            note.textContent = 'Kontaktiraj nas na: ' + email;
+          }
+        }
+      }, 600);
+    });
+  })();
+</script>
+
+</body>
+</html>

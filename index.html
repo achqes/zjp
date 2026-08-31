@@ -23,9 +23,9 @@
   </script>
 <!-- Hidden element for iOS haptic feedback -->
 <input type="checkbox" id="ios-haptic-trigger" style="display: none;" switch />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Fontovi su sada self-hosted (fonts.css + /fonts) umjesto Google Fonts CDN-a,
+       tako da se ne mijenjaju kad je aplikacija offline (vidi fonts.css za detalje) -->
+  <link rel="stylesheet" href="fonts.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -105,19 +105,21 @@
       </a>
 
       <h3 class="section-title" style="margin-top: 10px;">O PLATFORMI</h3>
-      <a class="line-item" href="mailto:markoopacak08@gmail.com">
+      <a class="line-item" href="support.html">
+        <div class="line-number" style="background: transparent; font-size: 24px;">💬</div>
+        <span>Podrška</span>
+      </a>
+      <a class="line-item" href="mailto:markoopacak08@gmail.com?subject=napokon!%20-%20Prijava%20gre%C5%A1ke" id="info-mail-btn">
         <div class="line-number" style="background: transparent; font-size: 24px;">✉️</div>
         <span>Prijavi grešku (Email)</span>
       </a>
 
       <h3 class="section-title" style="margin-top: 10px;">PRAVNO</h3>
-      <!-- PLACEHOLDER: zamijeni href="https://" ispod sa svojim stvarnim Privacy Policy linkom (npr. Notion / Flycricket) -->
-      <a class="line-item" href="https://" target="_blank" rel="noopener">
+      <a class="line-item" href="privacy.html">
         <div class="line-number" style="background: transparent; font-size: 24px;">🔒</div>
         <span>Privacy Policy</span>
       </a>
-      <!-- PLACEHOLDER: zamijeni href="https://" ispod sa svojim stvarnim Terms of Service linkom -->
-      <a class="line-item" href="https://" target="_blank" rel="noopener">
+      <a class="line-item" href="terms.html">
         <div class="line-number" style="background: transparent; font-size: 24px;">📄</div>
         <span>Terms of Service</span>
       </a>
