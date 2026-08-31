@@ -3,7 +3,7 @@
 // a to se dešava SAMO kad je aplikacija otvorena kao instalirana (dodana na početni zaslon).
 // U običnom pregledniku (tab) se ovaj fajl nikad ne registruje, pa offline mod tamo ne radi.
 
-const CACHE_NAME = 'napokon-cache-v3';
+const CACHE_NAME = 'napokon-cache-v4';
 
 const APP_SHELL = [
   '/',
@@ -23,14 +23,26 @@ const APP_SHELL = [
   '/fonts/inter-500.woff2',
   '/fonts/inter-600.woff2',
   '/fonts/inter-700.woff2',
+  '/fonts/inter-ext-400.woff2',
+  '/fonts/inter-ext-500.woff2',
+  '/fonts/inter-ext-600.woff2',
+  '/fonts/inter-ext-700.woff2',
   '/fonts/montserrat-400.woff2',
   '/fonts/montserrat-500.woff2',
   '/fonts/montserrat-600.woff2',
   '/fonts/montserrat-700.woff2',
+  '/fonts/montserrat-ext-400.woff2',
+  '/fonts/montserrat-ext-500.woff2',
+  '/fonts/montserrat-ext-600.woff2',
+  '/fonts/montserrat-ext-700.woff2',
   '/fonts/roboto-mono-400.woff2',
   '/fonts/roboto-mono-500.woff2',
   '/fonts/roboto-mono-600.woff2',
-  '/fonts/roboto-mono-700.woff2'
+  '/fonts/roboto-mono-700.woff2',
+  '/fonts/roboto-mono-ext-400.woff2',
+  '/fonts/roboto-mono-ext-500.woff2',
+  '/fonts/roboto-mono-ext-600.woff2',
+  '/fonts/roboto-mono-ext-700.woff2'
 ];
 
 // INSTALL — spremi osnovne fajlove aplikacije u cache
