@@ -346,7 +346,11 @@ h1, h2, h3, h4, h5, h6, .page-title, .section-title {
   display: none !important;
 }
 
-/* SCREENS - baza: fade (koristi se za glavne tabove: početna / raspored / info) */
+/* SCREENS - baza: fade (koristi se za glavne tabove: početna / raspored / info)
+   Napomena: prije je ovdje bio i "grow" efekat (scale 0.98 -> 1) uz fade, ali to
+   nije kako iOS zapravo mijenja glavne tabove (UITabBarController samo uradi
+   instant crossfade, bez skaliranja) - skaliranje je djelovalo kao "vještački"
+   dodatak. Sada je čist, brz crossfade bez transform-a i bez ikakvog bounce-a. */
 .screen {
   position: fixed;
   top: 0;
@@ -363,23 +367,16 @@ h1, h2, h3, h4, h5, h6, .page-title, .section-title {
   z-index: 1;
   visibility: hidden;
   opacity: 0;
-  /* Blagi "grow in" efekat (skala 0.98 -> 1) uz fade, sa Apple-ovom standardnom krivuljom
-     (ista kriva koju iOS koristi za sheet/modal prezentacije) - izgleda mekše i prirodnije
-     od običnog linearnog fade-a */
-  transform: scale(0.98);
-  transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1),
-              transform 0.32s cubic-bezier(0.32, 0.72, 0, 1),
-              visibility 0s linear 0.32s;
-  will-change: opacity, transform;
+  transition: opacity 0.22s ease-out,
+              visibility 0s linear 0.22s;
+  will-change: opacity;
 }
 
 .screen.active {
   z-index: 10;
   visibility: visible;
   opacity: 1;
-  transform: scale(1);
-  transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1),
-              transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: opacity 0.22s ease-out;
 }
 
 /* Screen-ovi koji se "otvaraju preko" prethodnog ekrana (detalji linije, detalji
@@ -897,18 +894,34 @@ a.line-item {
   font-weight: 600;
 }
 
-.home-tab-content {
-  display: none;
+/* SWIPE OBAVIJESTI <-> OMILJENE
+   Oba taba sjede jedan pored drugog u "traci" (track) koja se horizontalno
+   pomjera - tako da kad se prebacuje tab, sadržaj vizuelno "otklizi" u stranu
+   u kojoj se ide (kao iOS page/segment kontrole), umjesto da samo iščezne. */
+.home-swipe-viewport {
+  width: 100%;
+  overflow-x: hidden;
+  /* vertikalni skrol i dalje radi normalno preko .screen roditelja */
+  overflow-y: visible;
 }
 
-.home-tab-content.active {
-  display: block;
-  animation: homeTabFadeIn 0.2s ease;
+.home-swipe-track {
+  display: flex;
+  width: 200%;
+  align-items: flex-start;
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-@keyframes homeTabFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Bez tranzicije dok korisnik aktivno prevlači prstom - traka mora pratiti
+   prst 1:1, glatka tranzicija se dodaje tek na otpuštanje (snap) */
+.home-swipe-track.no-transition {
+  transition: none;
+}
+
+.home-tab-panel {
+  width: 50%;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 /* LINE ITEM SA FAVORITE BUTTON */

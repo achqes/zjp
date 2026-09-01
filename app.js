@@ -42,22 +42,9 @@ function triggerHaptic(duration = 40) {
 // =============================
 
 function initHomeScreen() {
-  const indicator = document.getElementById('home-segment-indicator');
-
-  document.querySelectorAll('.home-segment-btn').forEach((btn, i) => {
+  document.querySelectorAll('.home-segment-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const targetTab = btn.dataset.tab;
-
-      document.querySelectorAll('.home-segment-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.home-tab-content').forEach(c => c.classList.remove('active'));
-
-      btn.classList.add('active');
-      if (indicator) {
-        indicator.classList.toggle('position-1', i === 1);
-      }
-
-      const contentId = targetTab === 'favorites' ? 'home-tab-favorites' : 'home-tab-notifications';
-      document.getElementById(contentId).classList.add('active');
+      switchHomeTab(btn.dataset.tab);
     });
   });
 
@@ -158,48 +145,134 @@ function openLineFromHome(lineId) {
 // =======================
 // SWIPE IZMEĐU OBAVIJESTI / OMILJENE (na početnoj)
 // =======================
+// Oba taba su jedan pored drugog u #home-swipe-track (traka širine 200%).
+// Prebacivanje - klikom ili prevlačenjem prsta - pomjera traku horizontalno,
+// tako da se sadržaj na ekranu vidljivo pomjeri u stranu u koju se ide
+// (isto kao segment/page kontrole na iOS-u), a ne da samo iščezne/pojavi se.
 function switchHomeTab(targetTab) {
-  const btn = document.querySelector(`.home-segment-btn[data-tab="${targetTab}"]`);
-  if (btn) btn.click();
+  if (window.__homeGoToTab) window.__homeGoToTab(targetTab);
 }
 
 (function initHomeSwipe() {
-  const homeContent = document.querySelector('#screen-home .content');
-  if (!homeContent) return;
+  const viewport = document.getElementById('home-swipe-viewport');
+  const track = document.getElementById('home-swipe-track');
+  const indicator = document.getElementById('home-segment-indicator');
+  if (!viewport || !track) return;
 
-  let homeSwipeStartX = 0;
-  let homeSwipeStartY = 0;
-  let homeSwipeActive = false;
+  const TABS = ['notifications', 'favorites'];
+  let currentIndex = 0;
 
-  homeContent.addEventListener('touchstart', (e) => {
-    homeSwipeStartX = e.touches[0].clientX;
-    homeSwipeStartY = e.touches[0].clientY;
-    homeSwipeActive = true;
+  function setActiveUI(index) {
+    const targetTab = TABS[index];
+    document.querySelectorAll('.home-segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === targetTab);
+    });
+    if (indicator) indicator.classList.toggle('position-1', index === 1);
+  }
+
+  function goToIndex(index, animate) {
+    index = Math.max(0, Math.min(TABS.length - 1, index));
+    currentIndex = index;
+
+    const width = viewport.offsetWidth;
+    track.classList.toggle('no-transition', !animate);
+    track.style.transform = `translateX(${-index * width}px)`;
+    if (!animate) void track.offsetHeight; // force reflow prije nego se transition vrati
+
+    setActiveUI(index);
+  }
+
+  window.__homeGoToTab = (tab) => {
+    const idx = TABS.indexOf(tab);
+    if (idx !== -1) goToIndex(idx, true);
+  };
+
+  // Ako se promijeni širina viewporta (rotacija, resize), ponovo poravnaj traku
+  // bez animacije da ne "skoči".
+  window.addEventListener('resize', () => goToIndex(currentIndex, false));
+
+  let startX = 0;
+  let startY = 0;
+  let dragging = false;
+  let axis = null; // 'x' | 'y' | null (dok se ne odluči smjer)
+  let startTranslate = 0;
+
+  viewport.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    dragging = true;
+    axis = null;
+    startTranslate = -currentIndex * viewport.offsetWidth;
+    track.classList.add('no-transition');
   }, { passive: true });
 
-  homeContent.addEventListener('touchend', (e) => {
-    if (!homeSwipeActive) return;
-    homeSwipeActive = false;
+  viewport.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
 
-    const endX = e.changedTouches[0].clientX;
-    const endY = e.changedTouches[0].clientY;
-    const deltaX = endX - homeSwipeStartX;
-    const deltaY = Math.abs(endY - homeSwipeStartY);
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
 
-    // Mora biti horizontalan swipe (ne vertikalni scroll liste)
-    if (Math.abs(deltaX) > 60 && deltaY < 60) {
-      const activeBtn = document.querySelector('.home-segment-btn.active');
-      const currentTab = activeBtn ? activeBtn.dataset.tab : 'notifications';
-
-      if (deltaX < 0 && currentTab === 'notifications') {
-        // Swipe ulijevo -> Omiljene
-        switchHomeTab('favorites');
-      } else if (deltaX > 0 && currentTab === 'favorites') {
-        // Swipe udesno -> Obavijesti
-        switchHomeTab('notifications');
-      }
+    // Zaključaj smjer tek nakon što se prst pomjeri dovoljno - tako swipe
+    // ne "krade" obični vertikalni scroll liste (ovo je bio glavni razlog
+    // zašto je swipe ranije djelovao buggy/nepouzdano).
+    if (axis === null) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
     }
+
+    if (axis === 'y') return; // pusti normalan vertikalni scroll
+
+    e.preventDefault(); // sad smo sigurno u horizontalnom swipe-u
+
+    const width = viewport.offsetWidth;
+    let translate = startTranslate + dx;
+
+    // Blagi "rubber band" otpor na krajevima (kao iOS), umjesto da se
+    // prevlačenje naglo zaustavi na prvoj/zadnjoj stranici
+    const min = -(TABS.length - 1) * width;
+    const max = 0;
+    if (translate > max) translate = max + (translate - max) * 0.35;
+    if (translate < min) translate = min + (translate - min) * 0.35;
+
+    track.style.transform = `translateX(${translate}px)`;
+  }, { passive: false });
+
+  function endDrag(e) {
+    if (!dragging) return;
+    dragging = false;
+    track.classList.remove('no-transition');
+
+    if (axis !== 'x') {
+      axis = null;
+      return;
+    }
+
+    const dx = e.changedTouches[0].clientX - startX;
+    const width = viewport.offsetWidth;
+    const threshold = width * 0.18;
+
+    let targetIndex = currentIndex;
+    if (dx <= -threshold && currentIndex < TABS.length - 1) {
+      targetIndex = currentIndex + 1;
+    } else if (dx >= threshold && currentIndex > 0) {
+      targetIndex = currentIndex - 1;
+    }
+
+    goToIndex(targetIndex, true);
+    axis = null;
+  }
+
+  viewport.addEventListener('touchend', endDrag, { passive: true });
+  viewport.addEventListener('touchcancel', () => {
+    if (!dragging) return;
+    dragging = false;
+    track.classList.remove('no-transition');
+    goToIndex(currentIndex, true);
+    axis = null;
   }, { passive: true });
+
+  goToIndex(0, false);
 })();
 
 // =======================
