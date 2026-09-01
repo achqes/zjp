@@ -923,9 +923,38 @@ function initMailtoFallback(linkId, email) {
 }
 
 // =======================
+// WELCOME / CONSENT SCREEN
+// =======================
+// Prikazuje se samo prvi put kad neko ikad otvori aplikaciju. Nakon što korisnik
+// klikne "Slažem se i nastavljam", u localStorage se upiše zastavica koja se
+// provjerava pri svakom sljedećem pokretanju. Pošto se localStorage briše kad se
+// aplikacija deinstalira (ili obriše cache/podaci), ekran će se automatski
+// ponovo pojaviti nakon reinstalacije - baš kao pri prvom ikad pokretanju.
+const WELCOME_ACCEPTED_KEY = 'napokonWelcomeAccepted';
+
+function initWelcomeScreen() {
+  const welcomeScreen = document.getElementById('welcome-screen');
+  const agreeBtn = document.getElementById('welcome-agree-btn');
+  if (!welcomeScreen || !agreeBtn) return;
+
+  const alreadyAccepted = localStorage.getItem(WELCOME_ACCEPTED_KEY) === '1';
+
+  if (!alreadyAccepted) {
+    welcomeScreen.classList.remove('hidden');
+  }
+
+  agreeBtn.addEventListener('click', () => {
+    localStorage.setItem(WELCOME_ACCEPTED_KEY, '1');
+    welcomeScreen.classList.add('hidden');
+    triggerHaptic();
+  });
+}
+
+// =======================
 // INITIALIZATION
 // =======================
 document.addEventListener('DOMContentLoaded', () => {
+  initWelcomeScreen();
   initHomeScreen();
   renderLines();
   restoreState();

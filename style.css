@@ -1112,3 +1112,88 @@ a.line-item {
   opacity: 0.3;
   fill: currentColor;
 }
+/* =======================
+   WELCOME / CONSENT SCREEN
+   Prikazuje se samo pri prvom ikad pokretanju aplikacije (ili nakon reinstalacije,
+   jer se tada localStorage briše). Logika za prikaz/sakrivanje je u app.js.
+   ======================= */
+.welcome-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  max-width: 428px;
+  margin: 0 auto;
+  background: #ffb20d;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: calc(64px + env(safe-area-inset-top)) 28px calc(28px + env(safe-area-inset-bottom));
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.welcome-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.welcome-content {
+  margin-top: 40px;
+}
+
+.welcome-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 34px;
+  line-height: 1.25;
+  color: #FFFFFF;
+}
+
+.welcome-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 16px;
+  max-width: 320px;
+}
+
+.welcome-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.welcome-legal {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+
+.welcome-legal a {
+  color: #FFFFFF;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.welcome-agree-btn {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: #ffb20d;
+  background: #FFFFFF;
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  width: 100%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.welcome-agree-btn:active {
+  opacity: 0.85;
+}
