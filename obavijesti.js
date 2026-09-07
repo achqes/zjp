@@ -6,7 +6,7 @@
 // Boja trake se mijenja preko lineColor (hex).
 const OBAVIJESTI = [
   {
-    id: 1,
+    id: 2,
     title: "Promet na podsljednjim dnevnim polascima se odvija brže!",
     content: "Kako bi bio siguran da ćeš stići na svoje odredište, preporučujemo da na svoju željenu stanicu dođeš 5 do 10 minuta ranije. <br><br>Ponekad vozači zbog praznih cesta stignu ranije. Nemoj dopustiti da ti bus pobjegne!",
     timestamp: "2026-02-25T12:00:00Z",
@@ -14,6 +14,17 @@ const OBAVIJESTI = [
     lineColor: "#ffb20d",
     showTitle: true,
     showTime: false,
+    showLine: true
+  },
+    {
+    id: 1,
+    title: "Bugovi su idalje mogući!",
+    content: "napokon! se trenutno nalazi u svojoj posljednjoj fazi testiranja i očekuje se pojava grešaka! Ovo je pretproizvodna (predizdanje) verzija, stoga sve greške koje primijetite možete poslati na email 'markoopacak08@gmail.com' ili putem DM-a na Instagramu @uhmarko. Ispričavamo se zbog svih autobusa koje možda propustite ili onih situacija kada dođete na autobusnu stanicu malo prerano. Ova aplikacija je napravljena za vas i neprestano se poboljšava. ",
+    timestamp: "2026-09-07T12:00:00Z",
+    expiresInDays: 10000, // Notifikacija nestaje nakon 1000 dana
+    lineColor: "#ffb20d",
+    showTitle: true,
+    showTime: true,
     showLine: true
   }
 ];
