@@ -974,7 +974,7 @@ const LINES = [
               {name: "Stara Pijaca", offset: 11},
               {name: "Hotel Metalurg", offset: 13},
               {name: "Autobuska Stanica", offset: 16},
-              {name: "Ul. Prof. Juraja Neidhardta", offset: 19},
+              {name: "Nova Zenica", offset: 19},
               {name: "Donja Gračanica", offset: 25}
             ]
           )
@@ -989,7 +989,7 @@ const LINES = [
             ["06:40", "07:40", "08:40", "09:40", "10:40", "11:40", "12:40", "13:40", "14:40", "15:40", "16:40", "17:40", "18:40", "19:40", "20:40", "21:40", "22:40", "23:40"],
             [
               {name: "Donja Gračanica", offset: 0},
-              {name: "Kaktus", offset: 6},
+              {name: "Nova Zenica", offset: 6},
               {name: "Autobuska Stanica", offset: 9},
               {name: "Hotel Metalurg", offset: 12},
               {name: "Stara Pijaca", offset: 13},
