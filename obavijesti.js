@@ -19,7 +19,7 @@ const OBAVIJESTI = [
     {
     id: 1,
     title: "napokon ste tu!",
-    content: "Ovo je prva verzija aplikacije kreirana s ciljem da olakša svakodnevno kretanje busevima u Zenici. <br><br>Primjetio si grešku u rasporedu ili imaš prijedlog za novu funkcionalnost? Javi se na <b>@napokonapp<b> na Instagramu.",
+    content: "Ovo je prva verzija aplikacije kreirana s ciljem da olakša svakodnevno kretanje busevima u Zenici. <br><br>Primjetio si grešku u rasporedu ili imaš prijedlog za novu funkcionalnost? Javi se na <b>@napokonapp</b> na Instagramu.",
     timestamp: "2026-02-25T12:00:00Z",
     expiresInDays: 10000, // Notifikacija nestaje nakon 1000 dana
     lineColor: "#ffb20d",
@@ -41,7 +41,7 @@ const OBAVIJESTI = [
         {
     id: 4,
     title: "Primjetio si netačan red vožnje?",
-    content: "Trudimo se da sve linije i polasci budu tačni, ali ako baš red vožnje za tvoju liniju nije, slobodno nam se javi na Instagram @napokonapp i reci nam o kojoj liniji je riječ.",
+    content: "Trudimo se da sve linije i polasci budu tačni, ali ako baš red vožnje za tvoju liniju nije, slobodno nam se javi na Instagram <b>@napokonapp</b> i reci nam o kojoj liniji je riječ.",
     timestamp: "2026-02-25T12:00:00Z",
     expiresInDays: 10000, // Notifikacija nestaje nakon 1000 dana
     lineColor: "#ffb20d",
