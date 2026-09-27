@@ -18,22 +18,22 @@ function sameForAllDays(departures) {
 // =======================
 const LINES = [
   
-  // LINIJA 10: Autobusni Kolodvor - GORNJA ZENICA
+  // LINIJA 10: Autobuska Stanica - GORNJA ZENICA
   {
     id: 10,
     number: "10",
-    name: "Autobusni Kolodvor - Gornja Zenica",
+    name: "Autobuska Stanica - Gornja Zenica",
     schedule: { workdays: true, saturday: true, sunday: true },
     directions: [
       {
         id: "as-gornja",
-        from: "Autobusni Kolodvor",
+        from: "Autobuska Stanica",
         to: "Gornja Zenica",
         departures: {
           workdays: createDepartures(
             ["06:30", "07:30", "09:30", "11:00", "12:00", "13:30", "15:30", "17:30", "19:30", "21:30", "23:30"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Stadion", offset: 3},
               {name: "Općina", offset: 6},
               {name: "Lovački dom", offset: 9},
@@ -51,7 +51,7 @@ const LINES = [
           saturday: createDepartures(
             ["06:30", "07:30", "09:30", "11:00", "12:00", "13:30", "15:30", "17:30", "19:30", "21:30", "23:30"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Stadion", offset: 3},
               {name: "Općina", offset: 6},
               {name: "Lovački dom", offset: 9},
@@ -69,7 +69,7 @@ const LINES = [
           sunday: createDepartures(
            ["07:30","12:00","15:30","19:30", "21:30", "23:30"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Stadion", offset: 3},
               {name: "Općina", offset: 6},
               {name: "Lovački dom", offset: 9},
@@ -89,7 +89,7 @@ const LINES = [
       {
         id: "gornja-as",
         from: "Gornja Zenica",
-        to: "Autobusni Kolodvor",
+        to: "Autobuska Stanica",
         departures: {
           workdays: createDepartures(
             ["05:50", "07:00", "08:20", "10:00", "11:30", "12:30", "14:00", "16:20", "18:00", "20:15", "22:00"],
@@ -106,7 +106,7 @@ const LINES = [
               {name: "Lovački dom", offset: 22},
               {name: "Općina", offset: 25},
               {name: "Stadion", offset: 28},
-              {name: "Autobusni Kolodvor", offset: 31}
+              {name: "Autobuska Stanica", offset: 31}
             ]
           ),
           saturday: createDepartures(
@@ -124,7 +124,7 @@ const LINES = [
               {name: "Lovački dom", offset: 22},
               {name: "Općina", offset: 25},
               {name: "Stadion", offset: 28},
-              {name: "Autobusni Kolodvor", offset: 31}
+              {name: "Autobuska Stanica", offset: 31}
             ]
           ),
           sunday: createDepartures(
@@ -142,7 +142,7 @@ const LINES = [
               {name: "Lovački dom", offset: 22},
               {name: "Općina", offset: 25},
               {name: "Stadion", offset: 28},
-              {name: "Autobusni Kolodvor", offset: 31}
+              {name: "Autobuska Stanica", offset: 31}
             ]
           )
         }
@@ -168,7 +168,7 @@ const LINES = [
             ["05:30", "06:30", "07:30", "08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30", "19:30", "20:30"],
             [
               {name: "Blatuša", offset: 0},
-              {name: "Autobusni Kolodvor", offset: 3},
+              {name: "Autobuska Stanica", offset: 3},
               {name: "Stadion", offset: 5},
               {name: "Općina", offset: 8},
               {name: "Dom", offset: 11},
@@ -197,7 +197,7 @@ const LINES = [
               {name: "Dom A.BiH", offset: 12},
               {name: "Općina", offset: 15},
               {name: "Stadion", offset: 18},
-              {name: "Autobusni Kolodvor", offset: 20},
+              {name: "Autobuska Stanica", offset: 20},
               {name: "Blatuša", offset: 23}
             ]
           )
@@ -227,7 +227,7 @@ const LINES = [
               {name: "Džamija", offset: 11},
               {name: "Stara Pijaca", offset: 13},
               {name: "Hotel Metalurg", offset: 15},
-              {name: "Autobusni Kolodvor", offset: 17},
+              {name: "Autobuska Stanica", offset: 17},
               {name: "Nova Zenica", offset: 20},
               {name: "Prepodovi", offset: 22},
               {name: "Bebara", offset: 24},
@@ -248,7 +248,7 @@ const LINES = [
               {name: "Bebara", offset: 2},
               {name: "Prepodovi", offset: 4},
               {name: "Nova Zenica", offset: 6},
-              {name: "Autobusni Kolodvor", offset: 9},
+              {name: "Autobuska Stanica", offset: 9},
               {name: "Hotel Metalurg", offset: 11},
               {name: "Stara Pijaca", offset: 13},
               {name: "Džamija", offset: 15},
@@ -266,12 +266,12 @@ const LINES = [
   {
     id: 6,
     number: "6",
-    name: "Autobusni Kolodvor - Janjići",
+    name: "Autobuska Stanica - Janjići",
     schedule: { workdays: true, saturday: true, sunday: false },
     directions: [
       {
         id: "as-janjici",
-        from: "Autobusni Kolodvor",
+        from: "Autobuska Stanica",
         to: "Janjići",
         departures: {
           workdays: createDepartures(
@@ -312,7 +312,7 @@ const LINES = [
       {
         id: "janjici-as",
         from: "Janjići",
-        to: "Autobusni Kolodvor",
+        to: "Autobuska Stanica",
         departures: {
           workdays: createDepartures(
             ["05:40", "06:40", "09:40","11:50","13:00","14:55","16:00","17:40","18:55","20:30","22:35"],
@@ -376,7 +376,7 @@ const LINES = [
               {name: "Džamija", offset: 11},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 15},
-              {name: "Autobusni Kolodvor", offset: 20},
+              {name: "Autobuska Stanica", offset: 20},
               {name: "Nova Zenica", offset: 23},
               {name: "Preporod", offset: 25},
               {name: "Brana 2", offset: 27},
@@ -400,7 +400,7 @@ const LINES = [
               {name: "Džamija", offset: 11},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 15},
-              {name: "Autobusni Kolodvor", offset: 20},
+              {name: "Autobuska Stanica", offset: 20},
               {name: "Nova Zenica", offset: 23},
               {name: "Preporod", offset: 25},
               {name: "Brana 2", offset: 27},
@@ -430,7 +430,7 @@ const LINES = [
               {name: "Brana 2", offset: 27},
               {name: "Preporod", offset: 25},
 {name: "Nova Zenica", offset: 23},
-{name: "Autobusni Kolodvor", offset: 20},
+{name: "Autobuska Stanica", offset: 20},
 {name: "Hotel Metalurg", offset: 15},
 {name: "Stara Pijaca", offset: 12},
 {name: "Džamija", offset: 11},
@@ -454,7 +454,7 @@ const LINES = [
               {name: "Brana 2", offset: 27},
               {name: "Preporod", offset: 25},
 {name: "Nova Zenica", offset: 23},
-{name: "Autobusni Kolodvor", offset: 20},
+{name: "Autobuska Stanica", offset: 20},
 {name: "Hotel Metalurg", offset: 15},
 {name: "Stara Pijaca", offset: 12},
 {name: "Džamija", offset: 11},
@@ -489,7 +489,7 @@ const LINES = [
             [
               {name: "Kanal", offset: 0},
               {name: "Nova Zenica", offset: 6},
-              {name: "Autobusni Kolodvor", offset: 9},
+              {name: "Autobuska Stanica", offset: 9},
               {name: "Hotel Metalurg", offset: 11},
               {name: "Stara Pijaca", offset: 13},
               {name: "Džamija", offset: 15},
@@ -503,7 +503,7 @@ const LINES = [
             [
               {name: "Kanal", offset: 0},
               {name: "Nova Zenica", offset: 6},
-              {name: "Autobusni Kolodvor", offset: 9},
+              {name: "Autobuska Stanica", offset: 9},
               {name: "Hotel Metalurg", offset: 11},
               {name: "Stara Pijaca", offset: 13},
               {name: "Džamija", offset: 15},
@@ -529,7 +529,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16},
+              {name: "Autobuska Stanica", offset: 16},
               {name: "Nova Zenica", offset: 19},
               {name: "Kanal", offset: 25}
             ]
@@ -543,7 +543,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16},
+              {name: "Autobuska Stanica", offset: 16},
               {name: "Nova Zenica", offset: 19},
               {name: "Kanal", offset: 25}
             ]
@@ -612,22 +612,22 @@ const LINES = [
     ]
   },
 
- // LINIJA 7: Autobusni Kolodvor - KLOPČE NOVO
+ // LINIJA 7: Autobuska Stanica - KLOPČE NOVO
   {
     id: 7,
     number: "7",
-    name: "Autobusni Kolodvor - Klopče",
+    name: "Autobuska Stanica - Klopče",
     schedule: { workdays: true, saturday: true, sunday: true },
     directions: [
       {
         id: "as-klopče",
-        from: "Autobusni Kolodvor",
+        from: "Autobuska Stanica",
         to: "Klopče",
         departures: {
           workdays: createDepartures(
             ["05:20", "06:05","06:45","07:40", "09:30", "11:10", "12:30", "13:25", "14:30", "15:30", "16:25", "17:40", "18:40", "19:40", "21:40","23:40"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 3},
               {name: "Stara Pijaca", offset: 5},
               {name: "Džamija", offset: 7},
@@ -641,7 +641,7 @@ const LINES = [
           saturday: createDepartures(
             ["05:20", "06:05","07:40", "09:30", "11:10", "12:30", "13:25", "15:30", "17:40", "19:40", "21:30","23:40"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 3},
               {name: "Stara Pijaca", offset: 5},
               {name: "Džamija", offset: 7},
@@ -655,7 +655,7 @@ const LINES = [
           sunday: createDepartures(
             ["05:20", "06:05","07:40", "09:30", "11:10", "12:30", "13:25", "15:30", "17:40", "19:40", "21:30","23:40"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 3},
               {name: "Stara Pijaca", offset: 5},
               {name: "Džamija", offset: 7},
@@ -671,7 +671,7 @@ const LINES = [
       {
         id: "klopce-as",
         from: "Klopče",
-        to: "Autobusni Kolodvor",
+        to: "Autobuska Stanica",
         departures: {
           workdays: createDepartures(
             ["05:45", "06:25", "07:05", "08:20","10:00","11:40","13:00", "13:50", "15:00", "15:50", "16:50", "18:05", "19:05", "20:05","21:55","00:05"],
@@ -684,7 +684,7 @@ const LINES = [
               {name: "Džamija", offset: 14},
               {name: "Stara Pijaca", offset: 16},
               {name: "Hotel Metalurg", offset: 18},
-              {name: "Autobusni Kolodvor", offset: 21}
+              {name: "Autobuska Stanica", offset: 21}
             ]
           ),
           saturday: createDepartures(
@@ -698,7 +698,7 @@ const LINES = [
               {name: "Džamija", offset: 14},
               {name: "Stara Pijaca", offset: 16},
               {name: "Hotel Metalurg", offset: 18},
-              {name: "Autobusni Kolodvor", offset: 21}
+              {name: "Autobuska Stanica", offset: 21}
             ]
           ),
           sunday: createDepartures(
@@ -712,7 +712,7 @@ const LINES = [
               {name: "Džamija", offset: 14},
               {name: "Stara Pijaca", offset: 16},
               {name: "Hotel Metalurg", offset: 18},
-              {name: "Autobusni Kolodvor", offset: 21}
+              {name: "Autobuska Stanica", offset: 21}
             ]
           )
         }
@@ -720,22 +720,22 @@ const LINES = [
     ]
   },
 
-  // LINIJA 7: Autobusni Kolodvor - LUKOVO POLJE
+  // LINIJA 7: Autobuska Stanica - LUKOVO POLJE
   {
     id: 8,
     number: "8",
-    name: "Autobusni Kolodvor - Lukovo Polje",
+    name: "Autobuska Stanica - Lukovo Polje",
     schedule: { workdays: true, saturday: true, sunday: true},
     directions: [
       {
         id: "as-lukovo",
-        from: "Autobusni Kolodvor",
+        from: "Autobuska Stanica",
         to: "Lukovo Polje",
         departures: {
           workdays: createDepartures(
             ["05:45", "06:30", "07:10", "09:00", "10:10", "11:00", "12:40", "13:40", "15:30", "16:10", "17:00", "18:40", "19:40", "21:40"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 2},
               {name: "Stara Pijaca", offset: 4},
               {name: "Džamija", offset: 6},
@@ -747,12 +747,12 @@ const LINES = [
               {name: "Lukovo Polje", offset: 16}
             ]
           ).concat([
-            {time: "11:50", stops: [{name: "Autobusni Kolodvor", offset: 0}, {name: "Hotel Metalurg", offset: 2}, {name: "Stara Pijaca", offset: 4}, {name: "Džamija", offset: 6}, {name: "Novi Most", offset: 8}, {name: "Garnizon", offset: 10}, {name: "Otpad", offset: 12}, {name: "DC ZPP", offset: 13}, {name: "Babina 2", offset: 14}, {name: "Lukovo Polje", offset: 16}], schoolOnly: true}
+            {time: "11:50", stops: [{name: "Autobuska Stanica", offset: 0}, {name: "Hotel Metalurg", offset: 2}, {name: "Stara Pijaca", offset: 4}, {name: "Džamija", offset: 6}, {name: "Novi Most", offset: 8}, {name: "Garnizon", offset: 10}, {name: "Otpad", offset: 12}, {name: "DC ZPP", offset: 13}, {name: "Babina 2", offset: 14}, {name: "Lukovo Polje", offset: 16}], schoolOnly: true}
           ]),
           saturday: createDepartures(
             ["05:45", "06:30", "07:10", "09:00", "10:10", "11:00", "12:40", "13:40", "15:30", "16:10", "17:00", "18:40", "19:40", "21:40"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 2},
               {name: "Stara Pijaca", offset: 4},
               {name: "Džamija", offset: 6},
@@ -767,7 +767,7 @@ const LINES = [
           sunday: createDepartures(
             ["05:45", "07:10", "09:00", "11:00", "12:40", "13:40", "15:30", "18:40","19:40","21:40"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 2},
               {name: "Stara Pijaca", offset: 4},
               {name: "Džamija", offset: 6},
@@ -784,7 +784,7 @@ const LINES = [
       {
         id: "lukovo-as",
         from: "Lukovo Polje",
-        to: "Autobusni Kolodvor",
+        to: "Autobuska Stanica",
         departures: {
           workdays: createDepartures(
             ["06:05", "06:50", "07:30", "09:20", "10:30", "11:20", "12:10", "13:00", "14:00", "15:30", "16:30", "17:20", "19:00", "20:00", "22:00"],
@@ -798,7 +798,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+              {name: "Autobuska Stanica", offset: 16}
             ]
           ),
           saturday: createDepartures(
@@ -813,7 +813,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+              {name: "Autobuska Stanica", offset: 16}
             ]
           ),
           sunday: createDepartures(
@@ -828,7 +828,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+              {name: "Autobuska Stanica", offset: 16}
             ]
           )
         }
@@ -836,22 +836,22 @@ const LINES = [
     ]
   },
 
-  // LINIJA 7: Autobusni Kolodvor - Banlozi
+  // LINIJA 7: Autobuska Stanica - Banlozi
   {
     id: 9,
     number: "9",
-    name: "Autobusni Kolodvor - Banlozi",
+    name: "Autobuska Stanica - Banlozi",
     schedule: { workdays: true, saturday: true, sunday: true },
     directions: [
       {
         id: "as-banlozi",
-        from: "Autobusni Kolodvor",
+        from: "Autobuska Stanica",
         to: "Banlozi",
         departures: {
           workdays: createDepartures(
             ["05:20","06:20","07:30","09:00","11:10","12:20","13:40","15:40","17:30","18:30","19:30","22:00","23:30"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 2},
               {name: "Stara Pijaca", offset: 4},
               {name: "Džamija", offset: 6},
@@ -866,7 +866,7 @@ const LINES = [
           saturday: createDepartures(
             ["05:45", "06:30", "07:10", "09:00", "10:10", "11:00", "12:40", "13:40", "15:30", "16:10", "17:00", "18:40", "19:40", "21:40"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 2},
               {name: "Stara Pijaca", offset: 4},
               {name: "Džamija", offset: 6},
@@ -881,7 +881,7 @@ const LINES = [
           sunday: createDepartures(
             ["05:20", "07:30", "09:00", "11:10", "13:40", "15:40", "17:30", "19:30","22:00","23:30"],
             [
-              {name: "Autobusni Kolodvor", offset: 0},
+              {name: "Autobuska Stanica", offset: 0},
               {name: "Hotel Metalurg", offset: 2},
               {name: "Stara Pijaca", offset: 4},
               {name: "Džamija", offset: 6},
@@ -898,7 +898,7 @@ const LINES = [
       {
         id: "banlozi-as",
         from: "Banlozi",
-        to: "Autobusni Kolodvor",
+        to: "Autobuska Stanica",
         departures: {
           workdays: createDepartures(
             ["05:45", "06:50", "08:00", "09:45", "11:40", "12:55", "14:10", "16:10", "18:00", "19:30", "20:00", "22:30", "00:05"],
@@ -912,7 +912,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+              {name: "Autobuska Stanica", offset: 16}
             ]
           ),
           saturday: createDepartures(
@@ -927,7 +927,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+              {name: "Autobuska Stanica", offset: 16}
             ]
           ),
           sunday: createDepartures(
@@ -942,7 +942,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 12},
               {name: "Hotel Metalurg", offset: 14},
-              {name: "Autobusni Kolodvor", offset: 16}
+              {name: "Autobuska Stanica", offset: 16}
             ]
           )
         }
@@ -973,7 +973,7 @@ const LINES = [
               {name: "Džamija", offset: 10},
               {name: "Stara Pijaca", offset: 11},
               {name: "Hotel Metalurg", offset: 13},
-              {name: "Autobusni Kolodvor", offset: 16},
+              {name: "Autobuska Stanica", offset: 16},
               {name: "Ul. Prof. Juraja Neidhardta", offset: 19},
               {name: "Donja Gračanica", offset: 25}
             ]
@@ -990,7 +990,7 @@ const LINES = [
             [
               {name: "Donja Gračanica", offset: 0},
               {name: "Kaktus", offset: 6},
-              {name: "Autobusni Kolodvor", offset: 9},
+              {name: "Autobuska Stanica", offset: 9},
               {name: "Hotel Metalurg", offset: 12},
               {name: "Stara Pijaca", offset: 13},
               {name: "Džamija", offset: 15},
